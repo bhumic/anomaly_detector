@@ -55,12 +55,38 @@ public class MainFeaturesActivity extends Activity {
 		mappedPagesView = (TextView) this.findViewById(R.id.mapped_pages);
 	    
 		this.registerReceiver(this.mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-	    totalEntitiesView.setText("Total Entities: " + String.valueOf(getTotalEntities()));
-	    runningProcessesView.setText("Running processes: " + String.valueOf(getRunningProcesses()));
-	    int[] pages = getPagesInformation();
-	    anonymousPagesView.setText("Anonymous pages: " + pages[0] + " kB");
-	    mappedPagesView.setText("Mapped pages: " + pages[1] + " kB");
+		
+		Thread t = new Thread() {
+
+	        @Override
+	        public void run() {
+	            try {
+	                while (!isInterrupted()) {
+	                    Thread.sleep(3000);
+	                    runOnUiThread(new Runnable() {
+	                        @Override
+	                        public void run() {
+	                            updateTextViews();
+	                        }
+	                    });
+	                }
+	            } catch (InterruptedException e) {
+	            }
+	        }
+	    };
+
+	    t.start();
 	    
+	}
+	
+	public void updateTextViews() {
+		
+		int[] pages;
+		totalEntitiesView.setText("Total Entities: " + String.valueOf(getTotalEntities()));
+		runningProcessesView.setText("Running processes: " + String.valueOf(getRunningProcesses()));
+		pages = getPagesInformation();
+		anonymousPagesView.setText("Anonymous pages: " + pages[0] + " kB");
+		mappedPagesView.setText("Mapped pages: " + pages[1] + " kB");
 	}
 
 	
