@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Anomaly Detector</string>
+    <string name="action_settings">Settings</string>
+    <string name="mainActivityTextView">Features to collect</string>
+    <string name="startServiceButton">Start Service</string>
+    <string name="stopServiceButton">Stop Service</string>
+    <string name="startService">StartService</string>
+
+</resources>
