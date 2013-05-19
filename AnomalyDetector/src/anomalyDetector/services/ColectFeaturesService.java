@@ -22,6 +22,11 @@ import anomalyDetector.activities.MainFeaturesActivity;
 import anomalyDetector.factories.FeatureExtractorFactory;
 import anomalyDetector.featureExtraction.FeatureExtractor;
 
+/**
+ * 
+ * @author Bruno Humic
+ * @License GPLv3
+ */
 public class ColectFeaturesService extends Service {
 
 	private FeatureExtractorFactory factory;
@@ -45,7 +50,7 @@ public class ColectFeaturesService extends Service {
 		
 		try {
 			fOutputStream = openFileOutput(fileName, Context.MODE_APPEND);
-			fInputStream = openFileInput(fileName);
+			//fInputStream = openFileInput(fileName);
 		} catch (FileNotFoundException e) {
 			Log.d("Fos error", "Error opening file output stream");
 		}
@@ -87,7 +92,7 @@ public class ColectFeaturesService extends Service {
 		scheduleTaskExecutor.shutdown();
 		try {
 			fOutputStream.close();
-			fInputStream.close();
+			//fInputStream.close();
 		} catch (IOException e) {
 			Log.d("Fos error", "Error closing file output stream");
 		}

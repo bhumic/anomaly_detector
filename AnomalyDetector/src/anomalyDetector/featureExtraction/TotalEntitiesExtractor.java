@@ -8,6 +8,11 @@ import java.io.IOException;
 
 import android.app.ActivityManager;
 
+/**
+ * 
+ * @author Bruno Humic
+ * @License GPLv3
+ */
 public class TotalEntitiesExtractor extends FeatureExtractor{
 
 	private int totalEntities;

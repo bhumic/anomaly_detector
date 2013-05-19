@@ -8,6 +8,11 @@ import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.util.Log;
 
+/**
+ * 
+ * @author Bruno Humic
+ * @License GPLv3
+ */
 public class BatteryTemperatureExtractor extends FeatureExtractor {
 	
 	int temperature;

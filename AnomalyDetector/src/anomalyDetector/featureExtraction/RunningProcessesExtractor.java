@@ -5,6 +5,11 @@ import java.util.List;
 import android.app.ActivityManager;
 import android.content.Context;
 
+/**
+ * 
+ * @author Bruno Humic
+ * @License GPLv3
+ */
 public class RunningProcessesExtractor extends FeatureExtractor{
 
 	

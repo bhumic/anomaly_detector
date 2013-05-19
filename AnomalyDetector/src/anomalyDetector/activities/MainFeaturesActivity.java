@@ -20,6 +20,11 @@ import android.widget.ListView;
 import anomalyDetector.featureExtractor.R;
 import anomalyDetector.services.ColectFeaturesService;
 
+/**
+ * 
+ * @author Bruno Humic
+ * @License GPLv3
+ */
 public class MainFeaturesActivity extends Activity {
 	
 	private String featureFileName = "features";

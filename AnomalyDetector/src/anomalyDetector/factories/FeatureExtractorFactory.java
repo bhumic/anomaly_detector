@@ -8,6 +8,11 @@ import anomalyDetector.featureExtraction.MappedPagesExtractor;
 import anomalyDetector.featureExtraction.RunningProcessesExtractor;
 import anomalyDetector.featureExtraction.TotalEntitiesExtractor;
 
+/**
+ * 
+ * @author Bruno Humic
+ * @License GPLv3
+ */
 public class FeatureExtractorFactory {
 
 	public FeatureExtractor createFeatureExtractor(String feature, Context context){

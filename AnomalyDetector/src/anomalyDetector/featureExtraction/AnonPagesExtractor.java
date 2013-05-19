@@ -9,6 +9,11 @@ import java.util.jar.Attributes.Name;
 
 import android.app.ActivityManager;
 
+/**
+ * 
+ * @author Bruno Humic
+ * @License GPLv3
+ */
 public class AnonPagesExtractor extends FeatureExtractor{
 
 	private File memoryFile = new File("/proc/meminfo");
