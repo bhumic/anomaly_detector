@@ -112,7 +112,4 @@ public class MainFeaturesActivity extends Activity {
 		stopServiceButton = (Button) findViewById(R.id.stopServiceButton);
 		stopServiceButton.setEnabled(true);
 	}
-	
-	
-
 }
