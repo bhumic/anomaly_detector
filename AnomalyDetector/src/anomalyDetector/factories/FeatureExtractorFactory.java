@@ -3,6 +3,7 @@ package anomalyDetector.factories;
 import android.content.Context;
 import anomalyDetector.featureExtraction.AnonPagesExtractor;
 import anomalyDetector.featureExtraction.BatteryTemperatureExtractor;
+import anomalyDetector.featureExtraction.CPUUsageExtractor;
 import anomalyDetector.featureExtraction.FeatureExtractor;
 import anomalyDetector.featureExtraction.MappedPagesExtractor;
 import anomalyDetector.featureExtraction.RunningProcessesExtractor;
@@ -33,6 +34,9 @@ public class FeatureExtractorFactory {
 		}
 		else if(feature.equals("Total Entities")){
 			featureExtractor = new TotalEntitiesExtractor();
+		}
+		else if(feature.equals("CPU Usage")){
+			featureExtractor = new CPUUsageExtractor();
 		}
 		
 		return featureExtractor;
