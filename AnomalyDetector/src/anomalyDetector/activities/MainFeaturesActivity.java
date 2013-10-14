@@ -54,6 +54,9 @@ public class MainFeaturesActivity extends Activity {
 		listView = (ListView) findViewById(R.id.featuresListView);
 		selectedFeatures = new ArrayList<String>();
 		
+		/*
+		 * List of features that can be collected
+		 */
 		AssetManager assetManager = getAssets();
 		BufferedReader reader;
 		
