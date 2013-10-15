@@ -3,4 +3,4 @@ Battery Temperature
 Mapped Pages
 Running Processes
 Total Entities
-CPU Usage
+Active Pages
