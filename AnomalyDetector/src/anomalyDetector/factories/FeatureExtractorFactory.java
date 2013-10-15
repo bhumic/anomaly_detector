@@ -4,6 +4,7 @@ import android.content.Context;
 import anomalyDetector.featureExtraction.ActivePagesExtractor;
 import anomalyDetector.featureExtraction.AnonPagesExtractor;
 import anomalyDetector.featureExtraction.BatteryTemperatureExtractor;
+import anomalyDetector.featureExtraction.BatteryVoltageExtractor;
 import anomalyDetector.featureExtraction.CPUUsageExtractor;
 import anomalyDetector.featureExtraction.FeatureExtractor;
 import anomalyDetector.featureExtraction.MappedPagesExtractor;
@@ -41,6 +42,9 @@ public class FeatureExtractorFactory {
 		}
 		else if(feature.equals("Active Pages")){
 			featureExtractor = new ActivePagesExtractor();
+		}
+		else if(feature.equals("Battery Voltage")){
+			featureExtractor = new BatteryVoltageExtractor(context);
 		}
 		
 		return featureExtractor;
