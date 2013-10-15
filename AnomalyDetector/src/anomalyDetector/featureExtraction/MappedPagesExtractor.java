@@ -6,7 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-import android.app.ActivityManager;
+//import android.app.ActivityManager;
 
 /**
  * 
@@ -34,6 +34,8 @@ public class MappedPagesExtractor extends FeatureExtractor{
 			while((line = reader.readLine()) != null){
 				if(line.contains("Mapped")) {
 					mappedPages = Integer.parseInt(line.split("\\s+")[1]);
+					reader.close();
+					break;
 				}
 			}
 		} catch (FileNotFoundException e) {
