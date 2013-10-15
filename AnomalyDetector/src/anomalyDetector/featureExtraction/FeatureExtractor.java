@@ -1,6 +1,6 @@
 package anomalyDetector.featureExtraction;
 
-import android.app.ActivityManager;
+//import android.app.ActivityManager;
 
 /**
  * 
