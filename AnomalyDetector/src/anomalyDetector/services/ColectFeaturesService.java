@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import android.app.ActivityManager;
+//import android.app.ActivityManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
