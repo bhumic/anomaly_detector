@@ -5,9 +5,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.jar.Attributes.Name;
-
-import android.app.ActivityManager;
+//import java.util.jar.Attributes.Name;
+//
+//import android.app.ActivityManager;
 
 /**
  * 
@@ -35,6 +35,8 @@ public class AnonPagesExtractor extends FeatureExtractor{
 			while((line = reader.readLine()) != null){
 				if(line.contains("AnonPages")) {
 					anonPages = Integer.parseInt(line.split("\\s+")[1]);
+					reader.close();
+					break;
 				}
 			}
 		} catch (FileNotFoundException e) {
