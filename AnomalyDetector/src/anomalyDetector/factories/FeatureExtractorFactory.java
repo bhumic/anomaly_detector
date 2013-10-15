@@ -1,6 +1,7 @@
 package anomalyDetector.factories;
 
 import android.content.Context;
+import anomalyDetector.featureExtraction.ActivePagesExtractor;
 import anomalyDetector.featureExtraction.AnonPagesExtractor;
 import anomalyDetector.featureExtraction.BatteryTemperatureExtractor;
 import anomalyDetector.featureExtraction.CPUUsageExtractor;
@@ -37,6 +38,9 @@ public class FeatureExtractorFactory {
 		}
 		else if(feature.equals("CPU Usage")){
 			featureExtractor = new CPUUsageExtractor();
+		}
+		else if(feature.equals("Active Pages")){
+			featureExtractor = new ActivePagesExtractor();
 		}
 		
 		return featureExtractor;
