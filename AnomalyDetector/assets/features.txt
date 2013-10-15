@@ -4,3 +4,4 @@ Mapped Pages
 Running Processes
 Total Entities
 Active Pages
+Battery Voltage
