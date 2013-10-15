@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 
@@ -74,8 +75,7 @@ public class MainFeaturesActivity extends Activity {
 		}
 		
 		listViewAdapter = new ArrayAdapter<String>(this, R.layout.row, selectedFeatures);
-		listView.setAdapter(listViewAdapter);
-	    
+		listView.setAdapter(listViewAdapter);	    
 	}
 	
 	@Override
