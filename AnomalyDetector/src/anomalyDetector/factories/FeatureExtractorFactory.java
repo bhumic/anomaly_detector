@@ -6,6 +6,7 @@ import anomalyDetector.featureExtraction.AnonPagesExtractor;
 import anomalyDetector.featureExtraction.BatteryTemperatureExtractor;
 import anomalyDetector.featureExtraction.BatteryVoltageExtractor;
 import anomalyDetector.featureExtraction.CPUUsageExtractor;
+import anomalyDetector.featureExtraction.CameraUsageExtractor;
 import anomalyDetector.featureExtraction.FeatureExtractor;
 import anomalyDetector.featureExtraction.MappedPagesExtractor;
 import anomalyDetector.featureExtraction.RunningProcessesExtractor;
@@ -45,6 +46,9 @@ public class FeatureExtractorFactory {
 		}
 		else if(feature.equals("Battery Voltage")){
 			featureExtractor = new BatteryVoltageExtractor(context);
+		}
+		else if(feature.equals("Camera Usage")){
+			featureExtractor = new CameraUsageExtractor();
 		}
 		
 		return featureExtractor;
