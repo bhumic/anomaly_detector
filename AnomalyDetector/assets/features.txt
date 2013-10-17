@@ -5,3 +5,4 @@ Running Processes
 Total Entities
 Active Pages
 Battery Voltage
+Camera Usage
