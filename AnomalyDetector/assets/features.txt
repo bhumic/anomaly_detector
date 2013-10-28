@@ -5,4 +5,7 @@ Running Processes
 Total Entities
 Active Pages
 Battery Voltage
-Camera Usage
+#CPU Usage
+#Camera Usage
+WifiTxBytes
+WifiTxPackets
