@@ -65,6 +65,9 @@ public class MainFeaturesActivity extends Activity {
 			reader = new BufferedReader(new InputStreamReader(assetManager.open("features.txt")));
 			String line;
 			while((line = reader.readLine()) != null){
+				if(line.startsWith("#")){
+					continue;
+				}
 				selectedFeatures.add(line);
 			}
 			
