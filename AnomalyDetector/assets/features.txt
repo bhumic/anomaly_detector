@@ -9,3 +9,4 @@ Battery Voltage
 #Camera Usage
 WifiTxBytes
 WifiTxPackets
+WifiRxPackets
