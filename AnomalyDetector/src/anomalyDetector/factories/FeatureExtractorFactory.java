@@ -12,6 +12,7 @@ import anomalyDetector.featureExtraction.MappedPagesExtractor;
 import anomalyDetector.featureExtraction.RunningProcessesExtractor;
 import anomalyDetector.featureExtraction.TotalEntitiesExtractor;
 import anomalyDetector.featureExtraction.WifiTxBytesExtractor;
+import anomalyDetector.featureExtraction.WifiTxPacketsExtractor;
 
 /**
  * 
@@ -51,8 +52,11 @@ public class FeatureExtractorFactory {
 		else if(feature.equals("Camera Usage")){
 			featureExtractor = new CameraUsageExtractor();
 		}
-		else if(feature.equals("WifiTBytes")){
+		else if(feature.equals("WifiTxBytes")){
 			featureExtractor = new WifiTxBytesExtractor();
+		}
+		else if(feature.equals("WifiTxPackets")){
+			featureExtractor = new WifiTxPacketsExtractor();
 		}
 		
 		return featureExtractor;
