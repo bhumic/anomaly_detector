@@ -11,6 +11,7 @@ import anomalyDetector.featureExtraction.FeatureExtractor;
 import anomalyDetector.featureExtraction.MappedPagesExtractor;
 import anomalyDetector.featureExtraction.RunningProcessesExtractor;
 import anomalyDetector.featureExtraction.TotalEntitiesExtractor;
+import anomalyDetector.featureExtraction.WifiRxPacketsExtractor;
 import anomalyDetector.featureExtraction.WifiTxBytesExtractor;
 import anomalyDetector.featureExtraction.WifiTxPacketsExtractor;
 
@@ -57,6 +58,9 @@ public class FeatureExtractorFactory {
 		}
 		else if(feature.equals("WifiTxPackets")){
 			featureExtractor = new WifiTxPacketsExtractor();
+		}
+		else if(feature.equals("WifiRxPackets")){
+			featureExtractor = new WifiRxPacketsExtractor();
 		}
 		
 		return featureExtractor;
