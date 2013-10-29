@@ -12,3 +12,12 @@ For Android OS version 2.3 and earlier:
   3. Check the "Unknown sources" box
   4. When it shows the warning, tap "Ok" (Now you can install third party applications on your Android phone)
   5. Download the Anomaly Detector .apk file from: https://github.com/bhumic/anomaly_detector/raw/master/AnomalyDetector/bin/AnomalyDetector.apk
+  6. Once downloaded, install the application using package installer.
+
+For Android OS version 4.0 and later:
+  1. Go to Settings
+  2. Go to Security
+  3. Scroll down to checkbox "Unknown sources" and enable it.
+  4. When it shows the warning, tap "Ok" (Now you can install third party applications on your Android phone)
+  5. Download the Anomaly Detector .apk file from: https://github.com/bhumic/anomaly_detector/raw/master/AnomalyDetector/bin/AnomalyDetector.apk
+  6. Once downloaded, install the application using package installer.
