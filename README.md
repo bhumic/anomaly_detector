@@ -6,6 +6,8 @@ Currently the application isn't available on Google Play so to download it
 you have to enable third party applications installation on your Android mobile phone.
 This procedure depends on the Android version that you are running on your phone.
 
+NOTE: The application is currently in development and it is not recommended to install it yet!
+
 For Android OS version 2.3 and earlier:
   1. Go to Settings
   2. Got to Applications
