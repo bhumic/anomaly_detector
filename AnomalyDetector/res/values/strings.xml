@@ -6,6 +6,10 @@
     <string name="mainActivityTextView">Features to collect</string>
     <string name="startServiceButton">Start Service</string>
     <string name="stopServiceButton">Stop Service</string>
+    <string name="showCollectedDataButton">Show Collected Data</string>
     <string name="startService">StartService</string>
+    <string name="show_anon_pages">Anonymous pages data</string>
+    <string name="title_activity_show_anon_pages">Anonymous pages data</string>
+    <string name="hello_world">Hello world!</string>
 
 </resources>
