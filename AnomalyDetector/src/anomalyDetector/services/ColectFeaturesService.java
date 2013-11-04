@@ -36,21 +36,18 @@ public class ColectFeaturesService extends Service {
 	
 	private String fileName = "collected_features";
 	private FileOutputStream fOutputStream;
-	private FileInputStream fInputStream;
 	
 	public static final String COLECT_FEATURE_SERVICE = "anomalyDetector.services.ColectFeaturesService";
 	
 	@Override
 	public void onCreate() {
 		
-		//Log.d("krecemo", "krecemo");
 		factory = new FeatureExtractorFactory();
 		scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
 		featureExtractors = new ArrayList<FeatureExtractor>();
 		
 		try {
 			fOutputStream = openFileOutput(fileName, Context.MODE_APPEND);
-			//fInputStream = openFileInput(fileName);
 		} catch (FileNotFoundException e) {
 			Log.d("Fos error", "Error opening file output stream");
 		}
@@ -70,7 +67,6 @@ public class ColectFeaturesService extends Service {
 			public void run() {
 				
 				getData();
-				//readCollectedData();
 				
 			}
 		}, 2, 2, TimeUnit.SECONDS);
@@ -128,29 +124,10 @@ public class ColectFeaturesService extends Service {
 		String line = buffer.toString();
 		try {
 			fOutputStream.write(line.getBytes());
+			fOutputStream.flush();
 		} catch (IOException e) {
 			Log.d("Fos error", "Error while writing data to file output stream");
 		}
 		
 	}
-	
-	private void readCollectedData(){
-		
-		StringBuilder sb = new StringBuilder();
-        try{
-            BufferedReader reader = new BufferedReader(new InputStreamReader(fInputStream, "UTF-8"));
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                sb.append(line).append("\n");
-            }
-//            fInputStream.close();
-        } catch(OutOfMemoryError om){
-            om.printStackTrace();
-        } catch(Exception ex){
-            ex.printStackTrace();
-        }
-        String result = sb.toString();
-       Log.d("rezultat", result);
-	}
-
 }
