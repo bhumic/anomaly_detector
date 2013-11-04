@@ -1,9 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
-    <item
-        android:id="@+id/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/action_settings"/>
-
+    <!-- Show anonymous pages data, should always be in the overflow -->
+    <item android:id="@+id/show_anon_pages"
+          android:title="@string/show_anon_pages"
+          android:showAsAction="never" />
 </menu>
