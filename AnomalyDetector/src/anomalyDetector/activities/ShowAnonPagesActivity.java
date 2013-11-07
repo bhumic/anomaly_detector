@@ -1,8 +1,11 @@
 package anomalyDetector.activities;
 
+import java.util.Date;
+
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
 import org.achartengine.chart.PointStyle;
+import org.achartengine.model.TimeSeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
@@ -26,7 +29,7 @@ import anomalyDetector.featureExtractor.R;
 
 public class ShowAnonPagesActivity extends Activity {
 
-	private XYSeries series;
+	private TimeSeries series;
 	private XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
 	private XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
 	private XYSeriesRenderer mRenderer;
@@ -44,10 +47,12 @@ public class ShowAnonPagesActivity extends Activity {
 		String[] dataPerTick = data.split("\n");
 		LinearLayout layout = (LinearLayout) findViewById(R.id.chart);
 		
-		series = new XYSeries("Anonymous pages(MB)");
+		//series = new XYSeries("Anonymous pages(MB)");
+		series = new TimeSeries("Anonymous pages(MB)");
 		dataset.addSeries(series);
 		mRenderer = new XYSeriesRenderer();
 		mRenderer.setColor(Color.YELLOW);
+		mRenderer.setLineWidth(2);
 		//mRenderer.setPointStyle(PointStyle.CIRCLE);
 		mRenderer.setFillPoints(true);
 		
@@ -59,16 +64,34 @@ public class ShowAnonPagesActivity extends Activity {
 		renderer.setAxisTitleTextSize(23.0f);
 		renderer.setChartTitleTextSize(23.0f);
 		renderer.setLabelsTextSize(20.0f);
+		renderer.setXLabels(0);
 		
 		int dataEntries = dataPerTick.length;
 		for(int i = 0; i < dataEntries; ++i){
-			series.add(i, Double.parseDouble(dataPerTick[i].split("\\s+")[0])/1000);
+			series.add(new Date(), Double.parseDouble(dataPerTick[i].split("\\s+")[0])/1000);
 		}
 		
 		mChart = ChartFactory.getCubeLineChartView(this, dataset, renderer, 0.3f);
+//		mChart.refreshDrawableState();
+//		mChart.repaint();
 		layout.addView(mChart);
 	}
 	
+//	public static void onReading(String dataLine){
+//		
+//		Double dataEntry = Double.parseDouble(dataLine.split("\\s+")[0])/1000;
+//		if(mChart != null){
+//			series.add(new Date(), dataEntry);
+//			mChart.repaint();
+//		}
+//	}
+	
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		Log.d("resume", "nastavak");
+	}
 	
 
 	/**
