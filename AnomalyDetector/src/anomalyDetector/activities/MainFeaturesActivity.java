@@ -7,11 +7,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ApplicationErrorReport.RunningServiceInfo;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.res.AssetManager;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,10 +48,11 @@ public class MainFeaturesActivity extends Activity {
 	public final static String SELECTED_FEATURES = "anomalyDetector.activities.SELECTED_FEATURES";
 	private Button startServiceButton;
 	private Button stopServiceButton;
-	private Button readCollectedDataButton;
 	
 	private String fileName = "collected_features";
 	private FileInputStream fInputStream;
+	
+	boolean isServiceRunning = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -78,7 +85,34 @@ public class MainFeaturesActivity extends Activity {
 		}
 		
 		listViewAdapter = new ArrayAdapter<String>(this, R.layout.row, selectedFeatures);
-		listView.setAdapter(listViewAdapter);	    
+		listView.setAdapter(listViewAdapter);
+		
+		/**
+		 * Check if the service is running and enable/disable the buttons
+		 */
+		
+		ActivityManager am = (ActivityManager)this.getSystemService(ACTIVITY_SERVICE);
+		List<ActivityManager.RunningServiceInfo> rs = am.getRunningServices(100);
+		for(ActivityManager.RunningServiceInfo rsi : rs){
+			String serviceClassName = rsi.service.getClassName();
+			if(serviceClassName.equals("anomalyDetector.services.ColectFeaturesService")){
+				isServiceRunning = true;
+				break;
+			}
+		}
+		
+		if(isServiceRunning){
+			startServiceButton = (Button) findViewById(R.id.startServiceButton);
+			startServiceButton.setEnabled(false);
+			stopServiceButton = (Button) findViewById(R.id.stopServiceButton);
+			stopServiceButton.setEnabled(true);
+		}
+		else{
+			startServiceButton = (Button) findViewById(R.id.startServiceButton);
+			startServiceButton.setEnabled(true);
+			stopServiceButton = (Button) findViewById(R.id.stopServiceButton);
+			stopServiceButton.setEnabled(false);
+		}
 	}
 	
 	@Override
@@ -117,9 +151,8 @@ public class MainFeaturesActivity extends Activity {
 		
 		startServiceButton = (Button) findViewById(R.id.startServiceButton);
 		startServiceButton.setEnabled(false);
-		
 		stopServiceButton = (Button) findViewById(R.id.stopServiceButton);
-		stopServiceButton.setEnabled(true);		
+		stopServiceButton.setEnabled(true);
 	}
 	
 	public void stopService(View view){
@@ -130,9 +163,9 @@ public class MainFeaturesActivity extends Activity {
 		
 		startServiceButton = (Button) findViewById(R.id.startServiceButton);
 		startServiceButton.setEnabled(true);
-		
 		stopServiceButton = (Button) findViewById(R.id.stopServiceButton);
-		stopServiceButton.setEnabled(true);
+		stopServiceButton.setEnabled(false);
+		isServiceRunning = false;
 	}
 	
 	public String readCollectedData(){
