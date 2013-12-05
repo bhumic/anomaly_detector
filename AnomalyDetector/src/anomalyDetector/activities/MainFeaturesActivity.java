@@ -2,6 +2,7 @@ package anomalyDetector.activities;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,6 +26,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 import anomalyDetector.featureExtractor.R;
 import anomalyDetector.services.ColectFeaturesService;
 
@@ -126,6 +128,13 @@ public class MainFeaturesActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		
 		String collectedData = readCollectedData();
+		
+		if(collectedData == null){
+			Toast toast = Toast.makeText(getApplicationContext(), "No data to show", Toast.LENGTH_SHORT);
+			toast.show();
+			return false;
+		}
+		
 		switch(item.getItemId()){
 		
 		case R.id.show_anon_pages:
@@ -181,7 +190,9 @@ public class MainFeaturesActivity extends Activity {
 			fInputStream.close();
 		} catch(OutOfMemoryError om){
 			om.printStackTrace();
-		} catch(Exception ex){
+		} catch(FileNotFoundException ex){
+			return null;
+		} catch (Exception ex){
 			ex.printStackTrace();
 		}
 		String result = sb.toString();
