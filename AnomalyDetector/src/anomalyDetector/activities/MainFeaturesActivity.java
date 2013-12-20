@@ -1,6 +1,7 @@
 package anomalyDetector.activities;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -18,6 +19,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.AssetManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
@@ -37,9 +39,6 @@ import anomalyDetector.services.ColectFeaturesService;
  */
 public class MainFeaturesActivity extends Activity {
 	
-	private String featureFileName = "features";
-	private FileInputStream fis;
-	private FileOutputStream fos;
 	public static final String PREFS_NAME = "FeatureExtractionPreferences";
 	public final static String COLLECTED_DATA = "anomalyDetector.activities.COLLECTED_DATA";
 	
@@ -52,6 +51,8 @@ public class MainFeaturesActivity extends Activity {
 	private Button stopServiceButton;
 	
 	private String fileName = "collected_features";
+	private String filePath = "collectedFeatureStorage";
+	private File externalFile;
 	private FileInputStream fInputStream;
 	
 	boolean isServiceRunning = false;
@@ -63,6 +64,16 @@ public class MainFeaturesActivity extends Activity {
 		
 		listView = (ListView) findViewById(R.id.featuresListView);
 		selectedFeatures = new ArrayList<String>();
+		
+		if(ColectFeaturesService.isExternalStorageReadable()){
+			externalFile = new File(getExternalFilesDir(filePath), fileName);
+			if(!externalFile.exists()){
+				
+			}
+		}
+		else{
+			Log.d("Service:EXTERNAL_STORAGE", "External storage is not writable");
+		}
 		
 		/*
 		 * List of features that can be collected
@@ -86,7 +97,7 @@ public class MainFeaturesActivity extends Activity {
 			Log.d("MainFeaturesActivity", "Error reading assets file");
 		}
 		
-		listViewAdapter = new ArrayAdapter<String>(this, R.layout.row, selectedFeatures);
+		listViewAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, selectedFeatures);
 		listView.setAdapter(listViewAdapter);
 		
 		/**
@@ -177,11 +188,17 @@ public class MainFeaturesActivity extends Activity {
 		isServiceRunning = false;
 	}
 	
+	/**
+	 * Read currently collected data
+	 * from external storage
+	 * @return Data that was read
+	 */
 	public String readCollectedData(){
-		
+				
 		StringBuilder sb = new StringBuilder();
 		try{
-			fInputStream = openFileInput(fileName);
+			fInputStream = new FileInputStream(externalFile);
+			Log.d("direktorij", externalFile.getName());
 			BufferedReader reader = new BufferedReader(new InputStreamReader(fInputStream, "UTF-8"));
 			String line = null;
 			while ((line = reader.readLine()) != null) {
@@ -197,6 +214,5 @@ public class MainFeaturesActivity extends Activity {
 		}
 		String result = sb.toString();
 		return result;
-		//Log.d("rezultat", result);
 	}
 }
