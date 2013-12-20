@@ -1,6 +1,11 @@
 package anomalyDetector.activities;
 
 import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
@@ -13,6 +18,9 @@ import org.achartengine.renderer.XYSeriesRenderer;
 
 import android.R.layout;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.Messenger;
 import android.app.Activity;
 import android.util.Log;
 import android.view.Menu;
@@ -26,6 +34,8 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable.Orientation;
 import android.os.Build;
 import anomalyDetector.featureExtractor.R;
+import anomalyDetector.graph.AnonPagesGraph;
+import anomalyDetector.services.ColectFeaturesService;
 
 public class ShowAnonPagesActivity extends Activity {
 
@@ -34,6 +44,25 @@ public class ShowAnonPagesActivity extends Activity {
 	private XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
 	private XYSeriesRenderer mRenderer;
 	private GraphicalView mChart;
+	private AnonPagesGraph anonPagesGraph;
+	private Timer updateGraph;
+	
+	static final int DATA_RECIVED = 1;
+	
+	class IncomingHandler extends Handler{
+		
+		@Override
+		public void handleMessage(Message msg) {
+			switch(msg.what){
+			case DATA_RECIVED:
+				Log.d("PODACI", "stigllo");
+				break;
+			default:
+				super.handleMessage(msg);
+			}
+		}
+	}
+	final Messenger messenger = new Messenger(new IncomingHandler());
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,58 +70,48 @@ public class ShowAnonPagesActivity extends Activity {
 		setContentView(R.layout.activity_show_anon_pages);
 		// Show the Up button in the action bar.
 		setupActionBar();
-		
-		Intent intent = getIntent();
-		String data = intent.getStringExtra(MainFeaturesActivity.COLLECTED_DATA);
-		String[] dataPerTick = data.split("\n");
-		LinearLayout layout = (LinearLayout) findViewById(R.id.chart);
-		
-		//series = new XYSeries("Anonymous pages(MB)");
-		series = new TimeSeries("Anonymous pages(MB)");
-		dataset.addSeries(series);
-		mRenderer = new XYSeriesRenderer();
-		mRenderer.setColor(Color.YELLOW);
-		mRenderer.setLineWidth(2);
-		//mRenderer.setPointStyle(PointStyle.CIRCLE);
-		mRenderer.setFillPoints(true);
-		
-		renderer.addSeriesRenderer(mRenderer);
-		renderer.setBackgroundColor(Color.BLACK);
-		//renderer.setChartTitle("Anonymous pages data");
-		renderer.setYTitle("Megabytes");
-		renderer.setApplyBackgroundColor(true);
-		renderer.setAxisTitleTextSize(23.0f);
-		renderer.setChartTitleTextSize(23.0f);
-		renderer.setLabelsTextSize(20.0f);
-		renderer.setXLabels(0);
-		
-		int dataEntries = dataPerTick.length;
-		for(int i = 0; i < dataEntries; ++i){
-			series.add(new Date(), Double.parseDouble(dataPerTick[i].split("\\s+")[0])/1000);
-		}
-		
-		mChart = ChartFactory.getCubeLineChartView(this, dataset, renderer, 0.3f);
-//		mChart.refreshDrawableState();
-//		mChart.repaint();
+		anonPagesGraph = ColectFeaturesService.getLineGraph();
+	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		//Log.d("START", "u destroy je");
+		mChart = anonPagesGraph.getChart(this);		
+		LinearLayout layout = (LinearLayout) findViewById(R.id.charAnonPages);
 		layout.addView(mChart);
 	}
 	
-//	public static void onReading(String dataLine){
-//		
-//		Double dataEntry = Double.parseDouble(dataLine.split("\\s+")[0])/1000;
-//		if(mChart != null){
-//			series.add(new Date(), dataEntry);
-//			mChart.repaint();
-//		}
-//	}
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		//Log.d("DESTROY", "u destroy je");
+		updateGraph.cancel();
+	}
 	
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
-		Log.d("resume", "nastavak");
+		updateGraph = new Timer();
+		updateGraph.schedule(new TimerTask() {
+			
+			@Override
+			public void run() {
+				runOnUiThread(new Runnable() {
+					
+					@Override
+					public void run() {
+						mChart.repaint();
+					}
+				});
+			}
+		}, 0, 2000);
 	}
 	
+	@Override
+	protected void onPause() {
+		super.onPause();
+	}
 
 	/**
 	 * Set up the {@link android.app.ActionBar}, if the API is available.
@@ -127,5 +146,4 @@ public class ShowAnonPagesActivity extends Activity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
 }
