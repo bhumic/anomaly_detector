@@ -12,6 +12,7 @@ import org.achartengine.renderer.XYSeriesRenderer;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Paint.Align;
 
 public class AnonPagesGraph {
 
@@ -23,11 +24,12 @@ public class AnonPagesGraph {
 	private GraphicalView mChart;
 	
 	public AnonPagesGraph(String dataDescription) {
-		series = new TimeSeries(dataDescription);
+		series = new XYSeries(dataDescription);
 		renderer = new XYSeriesRenderer();
 		renderer.setColor(Color.YELLOW);
 		renderer.setLineWidth(2);
 		renderer.setFillPoints(true);
+		//renderer.setFillBelowLine(true);
 		dataset.addSeries(series);
 		
 		mRenderer.addSeriesRenderer(renderer);
@@ -41,6 +43,7 @@ public class AnonPagesGraph {
 		mRenderer.setMargins(new int[] {5,50,5,50});
 		mRenderer.setZoomEnabled(false, false);
 		mRenderer.setPanEnabled(false, false);
+		//mRenderer.setYAxisAlign(Align.RIGHT, 0);
 	}
 	
 	public GraphicalView getChart(Context context){
@@ -51,6 +54,11 @@ public class AnonPagesGraph {
 	public void addNewPoint(String lineData, int second){
 		double value = Double.parseDouble(lineData.split("\\s+")[0])/1000;
 		series.add(second, value);
+		
+		int maxValue = second;
+		int minValue = (second - 30)>0 ? (second - 30) : 0;
+		mRenderer.setXAxisMax(maxValue);
+		mRenderer.setXAxisMin(minValue);
 	}
 	
 	public XYMultipleSeriesRenderer getmRenderer() {
