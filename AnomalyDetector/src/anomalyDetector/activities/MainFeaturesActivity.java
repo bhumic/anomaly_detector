@@ -103,7 +103,6 @@ public class MainFeaturesActivity extends Activity {
 		/**
 		 * Check if the service is running and enable/disable the buttons
 		 */
-		
 		ActivityManager am = (ActivityManager)this.getSystemService(ACTIVITY_SERVICE);
 		List<ActivityManager.RunningServiceInfo> rs = am.getRunningServices(100);
 		for(ActivityManager.RunningServiceInfo rsi : rs){
@@ -145,9 +144,13 @@ public class MainFeaturesActivity extends Activity {
 			toast.show();
 			return false;
 		}
+		if(!isServiceRunning){
+			Toast toast = Toast.makeText(getApplicationContext(), "Service not running", Toast.LENGTH_SHORT);
+			toast.show();
+			return false;
+		}
 		
 		switch(item.getItemId()){
-		
 		case R.id.show_anon_pages:
 			Intent intent = new Intent(this, ShowAnonPagesActivity.class);
 			intent.putExtra(COLLECTED_DATA, collectedData);
@@ -168,6 +171,7 @@ public class MainFeaturesActivity extends Activity {
 		intent.putExtras(bundle);
 		
 		startService(intent);
+		isServiceRunning = true;
 		
 		startServiceButton = (Button) findViewById(R.id.startServiceButton);
 		startServiceButton.setEnabled(false);
