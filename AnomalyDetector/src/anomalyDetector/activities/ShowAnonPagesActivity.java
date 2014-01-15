@@ -19,8 +19,10 @@ import org.achartengine.renderer.XYSeriesRenderer;
 import android.R.layout;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.os.RemoteException;
 import android.app.Activity;
 import android.util.Log;
 import android.view.Menu;
@@ -29,7 +31,10 @@ import android.webkit.WebSettings.TextSize;
 import android.widget.LinearLayout;
 import android.support.v4.app.NavUtils;
 import android.annotation.TargetApi;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable.Orientation;
 import android.os.Build;
@@ -49,20 +54,71 @@ public class ShowAnonPagesActivity extends Activity {
 	
 	static final int DATA_RECIVED = 1;
 	
+	/**
+	 * Handle incoming messages from a service
+	 * @author bruno
+	 *
+	 */
 	class IncomingHandler extends Handler{
 		
 		@Override
 		public void handleMessage(Message msg) {
 			switch(msg.what){
-			case DATA_RECIVED:
-				Log.d("PODACI", "stigllo");
+			case ColectFeaturesService.MSG_DATA_RECEIVED:
+				mChart.repaint();
 				break;
 			default:
 				super.handleMessage(msg);
 			}
 		}
 	}
-	final Messenger messenger = new Messenger(new IncomingHandler());
+	final Messenger fromServiceMessenger = new Messenger(new IncomingHandler());
+	Messenger toServiceMessenger = null;
+	boolean mIsBound = false;
+	
+	private ServiceConnection toServiceConnection = new ServiceConnection() {
+		
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			toServiceMessenger = null;
+		}
+		
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder service) {
+			toServiceMessenger = new Messenger(service);
+			
+			try {
+				Message msg = Message.obtain(null, ColectFeaturesService.MSG_REGISTER_CLIENT);
+				msg.replyTo = fromServiceMessenger;
+				toServiceMessenger.send(msg);	
+			} catch (RemoteException e) {
+				Log.d("ACTIVITY-SERVICE", "Error communicating to service from activity");
+			}
+		}
+	};
+	
+	void doBindService(){
+		bindService(new Intent(this, ColectFeaturesService.class), toServiceConnection, Context.BIND_AUTO_CREATE);
+		mIsBound = true;
+	}
+	
+	void doUnbindService(){
+		if(mIsBound){
+			if(toServiceMessenger != null){
+				try {
+					Message msg = Message.obtain(null, ColectFeaturesService.MSG_UNREGISTER_CLIENT);
+					msg.replyTo = fromServiceMessenger;
+					toServiceMessenger.send(msg);
+				} catch (RemoteException e) {
+					Log.d("ACTIVITY-SERVICE", "Error while unbounding from service");
+				}
+			}
+			
+			unbindService(toServiceConnection);
+			mIsBound = false;
+		}
+	}
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -71,41 +127,27 @@ public class ShowAnonPagesActivity extends Activity {
 		// Show the Up button in the action bar.
 		setupActionBar();
 		anonPagesGraph = ColectFeaturesService.getLineGraph();
+		mChart = anonPagesGraph.getChart(this);		
+		LinearLayout layout = (LinearLayout) findViewById(R.id.charAnonPages);
+		layout.addView(mChart);
+		doBindService();
 	}
 	
 	@Override
 	protected void onStart() {
 		super.onStart();
-		//Log.d("START", "u destroy je");
-		mChart = anonPagesGraph.getChart(this);		
-		LinearLayout layout = (LinearLayout) findViewById(R.id.charAnonPages);
-		layout.addView(mChart);
 	}
 	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		//Log.d("DESTROY", "u destroy je");
-		updateGraph.cancel();
+		//updateGraph.cancel();
+		doUnbindService();
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		updateGraph = new Timer();
-		updateGraph.schedule(new TimerTask() {
-			
-			@Override
-			public void run() {
-				runOnUiThread(new Runnable() {
-					
-					@Override
-					public void run() {
-						mChart.repaint();
-					}
-				});
-			}
-		}, 0, 2000);
 	}
 	
 	@Override
