@@ -21,7 +21,11 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
 import anomalyDetector.activities.MainFeaturesActivity;
@@ -43,27 +47,39 @@ public class ColectFeaturesService extends Service {
 	private ArrayList<FeatureExtractor> featureExtractors;
 	
 	public static String externalStorageDirName = "collected_features";
-	//private FileOutputStream fOutputStream;
 	private String fileName = "collected_features";
 	private String filePath = "collectedFeatureStorage";
 	private FileOutputStream externalFileOutputStream;
 	private File externalFile;
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
 	private int elapsedTime = 0;
-	/*
-	 * Reference to graph object
-	 */
+	
+	public static final int MSG_DATA_RECEIVED = 0;
+	public static final int MSG_REGISTER_CLIENT = 1;
+	public static final int MSG_UNREGISTER_CLIENT = 2;
+	Messenger toClientMessenger;
+	
+	class IncomingHandler extends Handler{
+		
+		@Override
+		public void handleMessage(Message msg) {
+			switch(msg.what){
+			case ColectFeaturesService.MSG_REGISTER_CLIENT:
+				toClientMessenger = msg.replyTo;
+				break;
+			case ColectFeaturesService.MSG_UNREGISTER_CLIENT:
+				toClientMessenger = null;
+				break;
+			}
+		}
+	}
+	final Messenger fromClientMessenger = new Messenger(new IncomingHandler());
+	
+	//Reference to graph object 
 	private static AnonPagesGraph lineGraph;
 	
 	public static final String COLECT_FEATURE_SERVICE = "anomalyDetector.services.ColectFeaturesService";
 	
-	
-	public class LocalBinder extends Binder{
-		ColectFeaturesService getService(){
-			return ColectFeaturesService.this;
-		}
-	}
-	private final IBinder mBinder = new LocalBinder();
 	
 	@Override
 	public void onCreate() {
@@ -72,12 +88,6 @@ public class ColectFeaturesService extends Service {
 		scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
 		featureExtractors = new ArrayList<FeatureExtractor>();
 		lineGraph = new AnonPagesGraph("Anonymous pages");
-		
-		/*
-		 * Directory in external memory where the data is stored. 
-		 * A file in that directory where the data is stored
-		 */
-		//fileName += dateFormat.format(new Date());
 		
 		if(isExternalStorageWritable()){
 			externalFile = new File(getExternalFilesDir(filePath), fileName);
@@ -100,18 +110,18 @@ public class ColectFeaturesService extends Service {
 		}
 		
 		try {
-			if(externalFile.exists()){
-				//Log.d("POKRENUT", String.valueOf(externalFile.exists()));
+			/*
+			 * null condition added to check whether the file is
+			 * mounter or not.
+			 */
+			if(externalFile != null && externalFile.exists()){
 				externalFileOutputStream = new FileOutputStream(externalFile, true);
 			}
-			else{
+			else if(externalFile != null){
 				externalFileOutputStream = new FileOutputStream(externalFile, true);
 				fstLine += "\n";
 				writeToExternalStorage(fstLine);
 			}
-			/*
-			 * File output stream to the file in external storage
-			 */
 		} catch (FileNotFoundException e) {
 			Log.d("Fos error", "Error opening file output stream for external storage");
 		}
@@ -126,12 +136,11 @@ public class ColectFeaturesService extends Service {
 			}
 		}, 2, 2, TimeUnit.SECONDS);
 		
-		return 0;
+		return START_STICKY;
 	}
 	
 	@Override
 	public boolean stopService(Intent name) {
-		// TODO Auto-generated method stub
 		return super.stopService(name);
 	}
 	
@@ -141,9 +150,7 @@ public class ColectFeaturesService extends Service {
 		Log.d("STOP", "Service stoped");
 		scheduleTaskExecutor.shutdown();
 		try {
-			//fOutputStream.close();
 			externalFileOutputStream.close();
-			//fInputStream.close();
 		} catch (IOException e) {
 			Log.d("Fos error", "Error closing file output stream");
 		}
@@ -153,7 +160,7 @@ public class ColectFeaturesService extends Service {
 	
 	@Override
 	public IBinder onBind(Intent arg0) {
-		return mBinder;
+		return fromClientMessenger.getBinder();
 	}
 	
 	private void createExtractors(){
@@ -169,7 +176,6 @@ public class ColectFeaturesService extends Service {
 		StringBuffer buffer = new StringBuffer();		
 		
 		for(FeatureExtractor f : featureExtractors){
-			//Log.d(f.getName(), String.valueOf(f.extract()));
 			buffer.append(f.extract() + " ");
 		}
 
@@ -177,6 +183,15 @@ public class ColectFeaturesService extends Service {
 		String line = buffer.toString();
 		elapsedTime += 2;
 		lineGraph.addNewPoint(line, elapsedTime);
+		
+		if(toClientMessenger != null){
+			try {
+				Message msg = Message.obtain(null, MSG_DATA_RECEIVED);
+				toClientMessenger.send(msg);
+			} catch (RemoteException e) {
+				Log.d("SERVICE-ACTIVITY", "Error communicating to activity from service");
+			}
+		}
 		
 		if(!isExternalStorageWritable()){
 			Log.d("External storage INFO", "External storage IS NOT writable");
@@ -194,8 +209,10 @@ public class ColectFeaturesService extends Service {
 	private boolean writeToExternalStorage(String line){
 		
 		try {
-			externalFileOutputStream.write(line.getBytes());
-			externalFileOutputStream.flush();
+			if(isExternalStorageWritable() && externalFileOutputStream != null){
+				externalFileOutputStream.write(line.getBytes());
+				externalFileOutputStream.flush();
+			}
 		} catch (IOException e) {
 			Log.d("ERROR EXTERNAL MEM", "Errow while writing file to external memory");
 			return false;
