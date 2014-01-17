@@ -1,22 +1,6 @@
 package anomalyDetector.activities;
 
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
-import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
-import org.achartengine.chart.PointStyle;
-import org.achartengine.model.TimeSeries;
-import org.achartengine.model.XYMultipleSeriesDataset;
-import org.achartengine.model.XYSeries;
-import org.achartengine.renderer.XYMultipleSeriesRenderer;
-import org.achartengine.renderer.XYSeriesRenderer;
-
-import android.R.layout;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -27,38 +11,30 @@ import android.app.Activity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.webkit.WebSettings.TextSize;
 import android.widget.LinearLayout;
 import android.support.v4.app.NavUtils;
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable.Orientation;
 import android.os.Build;
 import anomalyDetector.featureExtractor.R;
 import anomalyDetector.graph.AnonPagesGraph;
 import anomalyDetector.services.ColectFeaturesService;
 
-public class ShowAnonPagesActivity extends Activity {
+public class ShowAnonPagesActivity extends Activity{
 
-	private TimeSeries series;
-	private XYMultipleSeriesDataset dataset = new XYMultipleSeriesDataset();
-	private XYMultipleSeriesRenderer renderer = new XYMultipleSeriesRenderer();
-	private XYSeriesRenderer mRenderer;
 	private GraphicalView mChart;
 	private AnonPagesGraph anonPagesGraph;
-	private Timer updateGraph;
 	
 	static final int DATA_RECIVED = 1;
 	
 	/**
 	 * Handle incoming messages from a service
-	 * @author bruno
-	 *
 	 */
+	@SuppressLint("HandlerLeak")
 	class IncomingHandler extends Handler{
 		
 		@Override
