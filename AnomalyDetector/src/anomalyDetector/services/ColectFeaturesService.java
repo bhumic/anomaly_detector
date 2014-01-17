@@ -4,21 +4,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import org.achartengine.GraphicalView;
 
 import android.annotation.SuppressLint;
 //import android.app.ActivityManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Binder;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -27,7 +22,6 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
-import android.widget.Toast;
 import anomalyDetector.activities.MainFeaturesActivity;
 import anomalyDetector.factories.FeatureExtractorFactory;
 import anomalyDetector.featureExtraction.FeatureExtractor;
@@ -38,7 +32,7 @@ import anomalyDetector.graph.AnonPagesGraph;
  * @author Bruno Humic
  * @License GPLv3
  */
-@SuppressLint("SimpleDateFormat")
+@SuppressLint({ "SimpleDateFormat", "HandlerLeak" })
 public class ColectFeaturesService extends Service {
 
 	private FeatureExtractorFactory factory;
@@ -51,13 +45,12 @@ public class ColectFeaturesService extends Service {
 	private String filePath = "collectedFeatureStorage";
 	private FileOutputStream externalFileOutputStream;
 	private File externalFile;
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd");
 	private int elapsedTime = 0;
 	
 	public static final int MSG_DATA_RECEIVED = 0;
 	public static final int MSG_REGISTER_CLIENT = 1;
 	public static final int MSG_UNREGISTER_CLIENT = 2;
-	Messenger toClientMessenger;
+	ArrayList<Messenger> toClientMessengers;
 	
 	class IncomingHandler extends Handler{
 		
@@ -65,18 +58,18 @@ public class ColectFeaturesService extends Service {
 		public void handleMessage(Message msg) {
 			switch(msg.what){
 			case ColectFeaturesService.MSG_REGISTER_CLIENT:
-				toClientMessenger = msg.replyTo;
+				toClientMessengers.add(msg.replyTo);
 				break;
 			case ColectFeaturesService.MSG_UNREGISTER_CLIENT:
-				toClientMessenger = null;
+				toClientMessengers.remove(msg.replyTo);
 				break;
 			}
 		}
 	}
 	final Messenger fromClientMessenger = new Messenger(new IncomingHandler());
 	
-	//Reference to graph object 
-	private static AnonPagesGraph lineGraph;
+	//Reference to graph objects 
+	private static AnonPagesGraph anonPagesGraph;
 	
 	public static final String COLECT_FEATURE_SERVICE = "anomalyDetector.services.ColectFeaturesService";
 	
@@ -87,7 +80,8 @@ public class ColectFeaturesService extends Service {
 		factory = new FeatureExtractorFactory();
 		scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
 		featureExtractors = new ArrayList<FeatureExtractor>();
-		lineGraph = new AnonPagesGraph("Anonymous pages");
+		anonPagesGraph = new AnonPagesGraph("Anonymous pages");
+		toClientMessengers = new ArrayList<Messenger>();
 		
 		if(isExternalStorageWritable()){
 			externalFile = new File(getExternalFilesDir(filePath), fileName);
@@ -182,22 +176,29 @@ public class ColectFeaturesService extends Service {
 		buffer.append("\n");
 		String line = buffer.toString();
 		elapsedTime += 2;
-		lineGraph.addNewPoint(line, elapsedTime);
+		anonPagesGraph.addNewPoint(line, elapsedTime);
 		
-		if(toClientMessenger != null){
-			try {
-				Message msg = Message.obtain(null, MSG_DATA_RECEIVED);
-				toClientMessenger.send(msg);
-			} catch (RemoteException e) {
-				Log.d("SERVICE-ACTIVITY", "Error communicating to activity from service");
-			}
-		}
+		notifyActivityObservers();
 		
 		if(!isExternalStorageWritable()){
 			Log.d("External storage INFO", "External storage IS NOT writable");
 		}
 		else{
 			writeToExternalStorage(line);
+		}
+	}
+	
+	public void notifyActivityObservers(){
+		
+		for(Messenger toClientMessenger : toClientMessengers){
+			try {
+				if(toClientMessenger != null){
+					Message msg = Message.obtain(null, MSG_DATA_RECEIVED);
+					toClientMessenger.send(msg);
+				}
+			} catch (RemoteException e) {
+				Log.d("SERVICE-ACTIVITY", "Error communicating to activity from service");
+			}
 		}
 	}
 	
@@ -263,6 +264,6 @@ public class ColectFeaturesService extends Service {
 	}
 	
 	public static AnonPagesGraph getLineGraph() {
-		return lineGraph;
+		return anonPagesGraph;
 	}
 }
