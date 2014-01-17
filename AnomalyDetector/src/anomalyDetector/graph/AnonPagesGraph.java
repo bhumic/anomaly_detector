@@ -1,10 +1,7 @@
 package anomalyDetector.graph;
 
-import java.util.Date;
-
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
-import org.achartengine.model.TimeSeries;
 import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
@@ -12,7 +9,6 @@ import org.achartengine.renderer.XYSeriesRenderer;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Paint.Align;
 
 public class AnonPagesGraph {
 
@@ -34,7 +30,7 @@ public class AnonPagesGraph {
 		
 		mRenderer.addSeriesRenderer(renderer);
 		mRenderer.setBackgroundColor(Color.BLACK);
-		mRenderer.setYTitle("Megabytes");
+		mRenderer.setYTitle("AnonymousPages(MB)");
 		mRenderer.setApplyBackgroundColor(true);
 		mRenderer.setAxisTitleTextSize(23.0f);
 		mRenderer.setChartTitleTextSize(23.0f);
@@ -56,9 +52,11 @@ public class AnonPagesGraph {
 		series.add(second, value);
 		
 		int maxValue = second;
-		int minValue = (second - 30)>0 ? (second - 30) : 0;
+		int minValue = (second - 60)>0 ? (second - 60) : 0;
 		mRenderer.setXAxisMax(maxValue);
 		mRenderer.setXAxisMin(minValue);
+		mRenderer.setYAxisMax(value + 200);
+		mRenderer.setYAxisMin(value - 200);
 	}
 	
 	public XYMultipleSeriesRenderer getmRenderer() {
