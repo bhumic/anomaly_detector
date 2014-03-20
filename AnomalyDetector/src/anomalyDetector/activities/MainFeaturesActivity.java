@@ -68,11 +68,11 @@ public class MainFeaturesActivity extends Activity {
 		if(ColectFeaturesService.isExternalStorageReadable()){
 			externalFile = new File(getExternalFilesDir(filePath), fileName);
 			if(!externalFile.exists()){
-				
+				//TODO
 			}
 		}
 		else{
-			Log.d("Service:EXTERNAL_STORAGE", "External storage is not writable");
+			Log.d("Service:EXTERNAL_STORAGE", "External storage is not writeable");
 		}
 		
 		/*
@@ -100,8 +100,14 @@ public class MainFeaturesActivity extends Activity {
 		listViewAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, selectedFeatures);
 		listView.setAdapter(listViewAdapter);
 		
-		/**
-		 * Check if the service is running and enable/disable the buttons
+	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		
+		/*
+		 * Check if the service is running
 		 */
 		ActivityManager am = (ActivityManager)this.getSystemService(ACTIVITY_SERVICE);
 		List<ActivityManager.RunningServiceInfo> rs = am.getRunningServices(100);
@@ -113,6 +119,7 @@ public class MainFeaturesActivity extends Activity {
 			}
 		}
 		
+		// Enable or disable the buttons based on service status(running or not running)
 		if(isServiceRunning){
 			startServiceButton = (Button) findViewById(R.id.startServiceButton);
 			startServiceButton.setEnabled(false);
