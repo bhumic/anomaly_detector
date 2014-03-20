@@ -63,42 +63,8 @@ public class MainFeaturesActivity extends Activity {
 		setContentView(R.layout.activity_main_features);
 		
 		listView = (ListView) findViewById(R.id.featuresListView);
-		selectedFeatures = new ArrayList<String>();
-		
-		if(ColectFeaturesService.isExternalStorageReadable()){
-			externalFile = new File(getExternalFilesDir(filePath), fileName);
-			if(!externalFile.exists()){
-				//TODO
-			}
-		}
-		else{
-			Log.d("Service:EXTERNAL_STORAGE", "External storage is not writeable");
-		}
-		
-		/*
-		 * List of features that can be collected
-		 */
-		AssetManager assetManager = getAssets();
-		BufferedReader reader;
-		
-		try {
-			reader = new BufferedReader(new InputStreamReader(assetManager.open("features.txt")));
-			String line;
-			while((line = reader.readLine()) != null){
-				if(line.startsWith("#")){
-					continue;
-				}
-				selectedFeatures.add(line);
-			}
-			
-			reader.close();
-			
-		} catch (IOException e) {
-			Log.d("MainFeaturesActivity", "Error reading assets file");
-		}
-		
-		listViewAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, selectedFeatures);
-		listView.setAdapter(listViewAdapter);
+		startServiceButton = (Button) findViewById(R.id.startServiceButton);
+		stopServiceButton = (Button) findViewById(R.id.stopServiceButton);
 		
 	}
 	
@@ -106,6 +72,7 @@ public class MainFeaturesActivity extends Activity {
 	protected void onStart() {
 		super.onStart();
 		
+		selectedFeatures = new ArrayList<String>();
 		/*
 		 * Check if the service is running
 		 */
@@ -121,17 +88,45 @@ public class MainFeaturesActivity extends Activity {
 		
 		// Enable or disable the buttons based on service status(running or not running)
 		if(isServiceRunning){
-			startServiceButton = (Button) findViewById(R.id.startServiceButton);
 			startServiceButton.setEnabled(false);
-			stopServiceButton = (Button) findViewById(R.id.stopServiceButton);
 			stopServiceButton.setEnabled(true);
 		}
 		else{
-			startServiceButton = (Button) findViewById(R.id.startServiceButton);
 			startServiceButton.setEnabled(true);
-			stopServiceButton = (Button) findViewById(R.id.stopServiceButton);
 			stopServiceButton.setEnabled(false);
 		}
+		
+		
+		/*
+		 * List of features that can be collected
+		 */
+		AssetManager assetManager = getAssets();
+		BufferedReader reader;
+		
+		/*
+		 * Read the features from assets and add them to the arraylist
+		 */
+		try {
+			reader = new BufferedReader(new InputStreamReader(assetManager.open("features.txt")));
+			String line;
+			while((line = reader.readLine()) != null){
+				// Skip comments
+				if(line.startsWith("#")){
+					continue;
+				}
+				selectedFeatures.add(line);
+			}
+			
+			reader.close();
+			
+		} catch (IOException e) {
+			Log.d("MainFeaturesActivity", "Error reading assets file");
+		}
+		
+		// Create and adapter that holds the selected features
+		// and pass it to the list view
+		listViewAdapter = new ArrayAdapter<String>(this, R.layout.row, selectedFeatures);
+		listView.setAdapter(listViewAdapter);
 	}
 	
 	@Override
@@ -144,13 +139,6 @@ public class MainFeaturesActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		
-		String collectedData = readCollectedData();
-		
-		if(collectedData == null){
-			Toast toast = Toast.makeText(getApplicationContext(), "No data to show", Toast.LENGTH_SHORT);
-			toast.show();
-			return false;
-		}
 		if(!isServiceRunning){
 			Toast toast = Toast.makeText(getApplicationContext(), "Service not running", Toast.LENGTH_SHORT);
 			toast.show();
@@ -160,7 +148,6 @@ public class MainFeaturesActivity extends Activity {
 		switch(item.getItemId()){
 		case R.id.show_anon_pages:
 			Intent intent = new Intent(this, ShowAnonPagesActivity.class);
-			intent.putExtra(COLLECTED_DATA, collectedData);
 			startActivity(intent);
 			return true;
 		default:
