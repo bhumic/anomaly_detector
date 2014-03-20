@@ -52,6 +52,9 @@ public class ColectFeaturesService extends Service {
 	public static final int MSG_UNREGISTER_CLIENT = 2;
 	ArrayList<Messenger> toClientMessengers;
 	
+	//Handler object that handles incoming messages from clients.
+	//In this case, it performs only the registration/unregistration
+	//of the clients.
 	class IncomingHandler extends Handler{
 		
 		@Override
@@ -94,10 +97,19 @@ public class ColectFeaturesService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		
+		/*
+		 * Obtain features that need to be collected.
+		 */
 		Bundle bundle = intent.getExtras();
 		features = bundle.getStringArrayList(MainFeaturesActivity.SELECTED_FEATURES);
 		
+		//Create feature extractor objects.
 		createExtractors();
+		
+		/*
+		 * Variable that contains the name of all the features that
+		 * are going to be extracted.
+		 */
 		String fstLine = "";
 		for(FeatureExtractor fExtractor : featureExtractors){
 			fstLine += fExtractor.getName() + ",";
@@ -105,8 +117,8 @@ public class ColectFeaturesService extends Service {
 		
 		try {
 			/*
-			 * null condition added to check whether the file is
-			 * mounter or not.
+			 * null condition added to check whether the external storage is
+			 * mounted or not.
 			 */
 			if(externalFile != null && externalFile.exists()){
 				externalFileOutputStream = new FileOutputStream(externalFile, true);
@@ -120,6 +132,9 @@ public class ColectFeaturesService extends Service {
 			Log.d("Fos error", "Error opening file output stream for external storage");
 		}
 		
+		/*
+		 * Collect data every 2 seconds from the data extractors
+		 */
 		scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
 			
 			@Override
