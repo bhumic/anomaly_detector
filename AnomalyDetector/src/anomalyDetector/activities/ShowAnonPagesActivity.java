@@ -31,7 +31,9 @@ public class ShowAnonPagesActivity extends Activity{
 	
 	static final int DATA_RECIVED = 1;
 	
-	/**
+	private LinearLayout llayout;
+	
+	/*
 	 * Handle incoming messages from a service
 	 */
 	@SuppressLint("HandlerLeak")
@@ -48,8 +50,13 @@ public class ShowAnonPagesActivity extends Activity{
 			}
 		}
 	}
+	// Messenger to receive data from service
 	final Messenger fromServiceMessenger = new Messenger(new IncomingHandler());
+	
+	// Messenger to send data to service
 	Messenger toServiceMessenger = null;
+	
+	// Is activity bound to the service
 	boolean mIsBound = false;
 	
 	private ServiceConnection toServiceConnection = new ServiceConnection() {
@@ -64,6 +71,7 @@ public class ShowAnonPagesActivity extends Activity{
 			toServiceMessenger = new Messenger(service);
 			
 			try {
+				//Register this activity with the data collection service
 				Message msg = Message.obtain(null, ColectFeaturesService.MSG_REGISTER_CLIENT);
 				msg.replyTo = fromServiceMessenger;
 				toServiceMessenger.send(msg);	
@@ -74,6 +82,7 @@ public class ShowAnonPagesActivity extends Activity{
 	};
 	
 	void doBindService(){
+		//Bind this activity to data collection service
 		bindService(new Intent(this, ColectFeaturesService.class), toServiceConnection, Context.BIND_AUTO_CREATE);
 		mIsBound = true;
 	}
@@ -99,19 +108,21 @@ public class ShowAnonPagesActivity extends Activity{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
 		setContentView(R.layout.activity_show_anon_pages);
 		// Show the Up button in the action bar.
 		setupActionBar();
-		anonPagesGraph = ColectFeaturesService.getLineGraph();
-		mChart = anonPagesGraph.getChart(this);		
-		LinearLayout layout = (LinearLayout) findViewById(R.id.charAnonPages);
-		layout.addView(mChart);
-		doBindService();
+		anonPagesGraph = ColectFeaturesService.getLineGraph();	
+		llayout = (LinearLayout) findViewById(R.id.charAnonPages);
 	}
 	
 	@Override
 	protected void onStart() {
 		super.onStart();
+		
+		mChart = anonPagesGraph.getChart(this);	
+		llayout.addView(mChart);
+		doBindService();
 	}
 	
 	@Override
