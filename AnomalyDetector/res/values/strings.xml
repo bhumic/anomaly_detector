@@ -12,5 +12,10 @@
     <string name="title_activity_show_anon_pages">Real time graphical data</string>
     <string name="hello_world">Hello world!</string>
     <string name="service_started">Data collection service started</string>
+    
+    <string-array name="drawer_layout_entries">
+        <item >Real time data</item>
+        <item >Delete logs</item>
+    </string-array>
 
 </resources>
