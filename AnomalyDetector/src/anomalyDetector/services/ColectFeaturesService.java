@@ -136,7 +136,7 @@ public class ColectFeaturesService extends Service {
 				Notification.Builder notificationBuilder = new Notification.Builder(getApplicationContext())
 														.setSmallIcon(R.drawable.notification_icon)
 														.setAutoCancel(true)
-														.setContentTitle("Service is running")
+														.setContentTitle("Anomaly detector service is running")
 														.setContentText("Running for " + String.valueOf(counter) + " seconds")
 														.setContentIntent(contentIntent);
 				
@@ -159,7 +159,7 @@ public class ColectFeaturesService extends Service {
 												.setTicker(text)
 												.setSmallIcon(R.drawable.notification_icon)
 												.setAutoCancel(true)
-												.setContentTitle("Service is running")
+												.setContentTitle("Anomaly detector service is running")
 												.setContentText("Running for " + String.valueOf(counter) + " seconds")
 												.setContentIntent(contentIntent);
 		
