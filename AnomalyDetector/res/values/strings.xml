@@ -9,7 +9,8 @@
     <string name="showCollectedDataButton">Show Collected Data</string>
     <string name="startService">StartService</string>
     <string name="show_anon_pages">Anonymous pages data</string>
-    <string name="title_activity_show_anon_pages">Anonymous pages data</string>
+    <string name="title_activity_show_anon_pages">Real time graphical data</string>
     <string name="hello_world">Hello world!</string>
+    <string name="service_started">Data collection service started</string>
 
 </resources>
