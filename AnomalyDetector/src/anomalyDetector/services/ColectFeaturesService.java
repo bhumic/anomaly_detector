@@ -5,11 +5,16 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 //import android.app.ActivityManager;
 import android.app.Service;
 import android.content.Context;
@@ -25,6 +30,7 @@ import android.util.Log;
 import anomalyDetector.activities.MainFeaturesActivity;
 import anomalyDetector.factories.FeatureExtractorFactory;
 import anomalyDetector.featureExtraction.FeatureExtractor;
+import anomalyDetector.featureExtractor.R;
 import anomalyDetector.graph.AnonPagesGraph;
 
 /**
@@ -37,7 +43,7 @@ public class ColectFeaturesService extends Service {
 
 	private FeatureExtractorFactory factory;
 	private ArrayList<String> features;
-	private ScheduledExecutorService scheduleTaskExecutor;
+	private Timer scheduleTaskExecutor;
 	private ArrayList<FeatureExtractor> featureExtractors;
 	
 	public static String externalStorageDirName = "collected_features";
@@ -51,6 +57,17 @@ public class ColectFeaturesService extends Service {
 	public static final int MSG_REGISTER_CLIENT = 1;
 	public static final int MSG_UNREGISTER_CLIENT = 2;
 	ArrayList<Messenger> toClientMessengers;
+	
+	//Notification ID used to update the notification timer
+	private static final int NOTIFICATION_ID = 1;
+	//Intent to open the application main activity
+	private Intent startActivityIntent;
+	//Intent to allow other part of application to launch startActivityIntent
+	private PendingIntent contentIntent;
+	//Counter that measures how long is the service running
+	private int counter = 0;
+	//Timer used to update notification bar
+	private Timer notificationTimer;
 	
 	//Handler object that handles incoming messages from clients.
 	//In this case, it performs only the registration/unregistration
@@ -81,17 +98,75 @@ public class ColectFeaturesService extends Service {
 	public void onCreate() {
 		
 		factory = new FeatureExtractorFactory();
-		scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
+		scheduleTaskExecutor = new Timer();
 		featureExtractors = new ArrayList<FeatureExtractor>();
 		anonPagesGraph = new AnonPagesGraph("Anonymous pages");
 		toClientMessengers = new ArrayList<Messenger>();
 		
+		//Intent to launch the main activity of the application
+		startActivityIntent = new Intent(getApplicationContext(), MainFeaturesActivity.class);
+		contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, startActivityIntent, Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
 		if(isExternalStorageWritable()){
 			externalFile = new File(getExternalFilesDir(filePath), fileName);
 		}
 		else{
 			Log.d("Service:EXTERNAL_STORAGE", "External storage is not writable");
 		}
+		
+		showNotification();
+		updateNotificationTimer();
+	}
+	
+	/**
+	 * Method that updates the notification timer every 
+	 * 1 seconds. Used to show the user how long the data
+	 * collection service is running.
+	 */
+	public void updateNotificationTimer(){
+		notificationTimer = new Timer();
+		
+		notificationTimer.scheduleAtFixedRate(new TimerTask() {
+			
+			@Override
+			public void run() {
+				counter++;
+				
+				//Build the notification
+				Notification.Builder notificationBuilder = new Notification.Builder(getApplicationContext())
+														.setSmallIcon(R.drawable.notification_icon)
+														.setAutoCancel(true)
+														.setContentTitle("Service is running")
+														.setContentText("Running for " + String.valueOf(counter) + " seconds")
+														.setContentIntent(contentIntent);
+				
+				//Pass the notification to the notification manager
+				NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+				notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
+			}
+		}, 0, 1000L);
+	}
+	
+	/**
+	 * Method to show the notification that the service is
+	 * started.
+	 */
+	public void showNotification(){
+		CharSequence text = getText(R.string.service_started);
+		
+		//Build the notification
+		Notification.Builder notificationBuilder = new Notification.Builder(getApplicationContext())
+												.setTicker(text)
+												.setSmallIcon(R.drawable.notification_icon)
+												.setAutoCancel(true)
+												.setContentTitle("Service is running")
+												.setContentText("Running for " + String.valueOf(counter) + " seconds")
+												.setContentIntent(contentIntent);
+		
+		//Pass the notification to the notification manager
+		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build());
+		
 	}
 	
 	@Override
@@ -135,15 +210,13 @@ public class ColectFeaturesService extends Service {
 		/*
 		 * Collect data every 2 seconds from the data extractors
 		 */
-		scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
+		scheduleTaskExecutor.scheduleAtFixedRate(new TimerTask() {
 			
 			@Override
 			public void run() {
-				
 				getData();
-				
 			}
-		}, 2, 2, TimeUnit.SECONDS);
+		}, 0, 2000L);
 		
 		return START_STICKY;
 	}
@@ -157,13 +230,26 @@ public class ColectFeaturesService extends Service {
 	public void onDestroy() {
 		
 		Log.d("STOP", "Service stoped");
-		scheduleTaskExecutor.shutdown();
+		removeNotification();
+		scheduleTaskExecutor.cancel();
 		try {
 			externalFileOutputStream.close();
 		} catch (IOException e) {
 			Log.d("Fos error", "Error closing file output stream");
 		}
 		super.onDestroy();
+	}
+	
+	/**
+	 * Method called when the service is stopped. It is
+	 * used to remove the notification from the status bar and
+	 * to reset the counter.
+	 */
+	public void removeNotification(){
+		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		notificationManager.cancel(NOTIFICATION_ID);
+		counter = 0;
+		notificationTimer.cancel();
 	}
 	
 	
