@@ -28,6 +28,7 @@ public class ShowAnonPagesActivity extends Activity{
 
 	private GraphicalView mChart;
 	private AnonPagesGraph anonPagesGraph;
+	private final String TAG = "SHOW_GRAPHS_ACTIVITY";
 	
 	static final int DATA_RECIVED = 1;
 	
@@ -114,21 +115,26 @@ public class ShowAnonPagesActivity extends Activity{
 		setupActionBar();
 		anonPagesGraph = ColectFeaturesService.getLineGraph();	
 		llayout = (LinearLayout) findViewById(R.id.charAnonPages);
+		
+		mChart = anonPagesGraph.getChart(this);	
+		llayout.addView(mChart);
 	}
 	
 	@Override
 	protected void onStart() {
 		super.onStart();
 		
-		mChart = anonPagesGraph.getChart(this);	
-		llayout.addView(mChart);
 		doBindService();
 	}
 	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		//updateGraph.cancel();
+	}
+	
+	@Override
+	protected void onStop() {
+		super.onStop();
 		doUnbindService();
 	}
 	
