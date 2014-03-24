@@ -17,6 +17,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 //import android.app.ActivityManager;
 import android.app.Service;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -105,8 +106,16 @@ public class ColectFeaturesService extends Service {
 		
 		//Intent to launch the main activity of the application
 		startActivityIntent = new Intent(getApplicationContext(), MainFeaturesActivity.class);
-		contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, startActivityIntent, Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
+		//contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, startActivityIntent, Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		
+		/*
+		 * TODO: EXPLAIN!
+		 */
+		TaskStackBuilder stackBuilder = TaskStackBuilder.create(getApplicationContext());
+		stackBuilder.addParentStack(MainFeaturesActivity.class);
+		stackBuilder.addNextIntent(startActivityIntent);
+		contentIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+		
 		if(isExternalStorageWritable()){
 			externalFile = new File(getExternalFilesDir(filePath), fileName);
 		}
@@ -246,6 +255,7 @@ public class ColectFeaturesService extends Service {
 	 * to reset the counter.
 	 */
 	public void removeNotification(){
+		Log.i("SERVICE", "Killing notification");
 		NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 		notificationManager.cancel(NOTIFICATION_ID);
 		counter = 0;
