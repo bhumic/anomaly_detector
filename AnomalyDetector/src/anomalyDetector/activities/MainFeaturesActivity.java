@@ -21,6 +21,7 @@ import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,6 +32,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import anomalyDetector.featureExtractor.R;
 import anomalyDetector.services.ColectFeaturesService;
+import anomalyDetector.utils.DrawerItemClickListener;
 
 /**
  * 
@@ -57,6 +59,14 @@ public class MainFeaturesActivity extends Activity {
 	
 	boolean isServiceRunning = false;
 	
+	//String array containing the drawer menu entries
+	private String[] drawerMenuEntries;
+	private DrawerLayout drawerLayout;
+	//List view containing items for Drawer Layout
+	private ListView drawerList;
+	//Onclick listener for items in drawer
+	private DrawerItemClickListener drawerItemClickListener;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -65,6 +75,18 @@ public class MainFeaturesActivity extends Activity {
 		listView = (ListView) findViewById(R.id.featuresListView);
 		startServiceButton = (Button) findViewById(R.id.startServiceButton);
 		stopServiceButton = (Button) findViewById(R.id.stopServiceButton);
+		
+		//Initialize Drawer Layout components
+		drawerMenuEntries = getResources().getStringArray(R.array.drawer_layout_entries);
+		drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+		drawerList = (ListView) findViewById(R.id.left_drawer);
+		
+		//Set the adapter for the list view in the drawer
+		drawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.row, drawerMenuEntries));
+		//Set on item click listener to open the new activity
+		//to show graphs.
+		drawerItemClickListener = new DrawerItemClickListener();
+		drawerList.setOnItemClickListener(drawerItemClickListener);
 		
 	}
 	
@@ -82,6 +104,7 @@ public class MainFeaturesActivity extends Activity {
 			String serviceClassName = rsi.service.getClassName();
 			if(serviceClassName.equals("anomalyDetector.services.ColectFeaturesService")){
 				isServiceRunning = true;
+				drawerItemClickListener.setServiceRunning(true);
 				break;
 			}
 		}
@@ -123,7 +146,7 @@ public class MainFeaturesActivity extends Activity {
 			Log.d("MainFeaturesActivity", "Error reading assets file");
 		}
 		
-		// Create and adapter that holds the selected features
+		// Create an adapter that holds the selected features
 		// and pass it to the list view
 		listViewAdapter = new ArrayAdapter<String>(this, R.layout.row, selectedFeatures);
 		listView.setAdapter(listViewAdapter);
@@ -166,6 +189,7 @@ public class MainFeaturesActivity extends Activity {
 		
 		startService(intent);
 		isServiceRunning = true;
+		drawerItemClickListener.setServiceRunning(true);
 		
 		startServiceButton = (Button) findViewById(R.id.startServiceButton);
 		startServiceButton.setEnabled(false);
@@ -184,6 +208,7 @@ public class MainFeaturesActivity extends Activity {
 		stopServiceButton = (Button) findViewById(R.id.stopServiceButton);
 		stopServiceButton.setEnabled(false);
 		isServiceRunning = false;
+		drawerItemClickListener.setServiceRunning(false);
 	}
 	
 	/**
