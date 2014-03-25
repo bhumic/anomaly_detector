@@ -5,7 +5,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
-import anomalyDetector.activities.ShowAnonPagesActivity;
+import anomalyDetector.activities.RealTimeDataActivity;
 
 public class DrawerItemClickListener implements ListView.OnItemClickListener{
 
@@ -27,7 +27,7 @@ public class DrawerItemClickListener implements ListView.OnItemClickListener{
 				toast.show();
 			}
 			else{
-				Intent intent = new Intent(parent.getContext(), ShowAnonPagesActivity.class);
+				Intent intent = new Intent(parent.getContext(), RealTimeDataActivity.class);
 				parent.getContext().startActivity(intent);
 			}
 		}
