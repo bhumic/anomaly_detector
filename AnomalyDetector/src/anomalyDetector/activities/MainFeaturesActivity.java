@@ -170,7 +170,7 @@ public class MainFeaturesActivity extends Activity {
 		
 		switch(item.getItemId()){
 		case R.id.show_anon_pages:
-			Intent intent = new Intent(this, ShowAnonPagesActivity.class);
+			Intent intent = new Intent(this, RealTimeDataActivity.class);
 			startActivity(intent);
 			return true;
 		default:
