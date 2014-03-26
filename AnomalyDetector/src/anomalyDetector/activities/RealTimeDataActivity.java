@@ -1,6 +1,7 @@
 package anomalyDetector.activities;
 
 import org.achartengine.GraphicalView;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -8,10 +9,12 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.app.Activity;
+import android.app.ListActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.support.v4.app.NavUtils;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -22,17 +25,23 @@ import android.content.ServiceConnection;
 import android.os.Build;
 import anomalyDetector.featureExtractor.R;
 import anomalyDetector.graph.AnonPagesGraph;
+import anomalyDetector.graph.BatteryTemperatureGraph;
 import anomalyDetector.services.ColectFeaturesService;
+import anomalyDetector.utils.GraphChartAdapter;
 
-public class RealTimeDataActivity extends Activity{
+public class RealTimeDataActivity extends ListActivity{
 
-	private GraphicalView mChart;
+	private GraphicalView anonPagesChart;
+	private GraphicalView batteryTempChart;
+	
 	private AnonPagesGraph anonPagesGraph;
+	private BatteryTemperatureGraph batteryTempGraph;
+	
 	private final String TAG = "SHOW_GRAPHS_ACTIVITY";
 	
 	static final int DATA_RECIVED = 1;
 	
-	private LinearLayout llayout;
+	private GraphChartAdapter chartAdapter;
 	
 	/*
 	 * Handle incoming messages from a service
@@ -44,7 +53,8 @@ public class RealTimeDataActivity extends Activity{
 		public void handleMessage(Message msg) {
 			switch(msg.what){
 			case ColectFeaturesService.MSG_DATA_RECEIVED:
-				mChart.repaint();
+				anonPagesChart.repaint();
+				batteryTempChart.repaint();
 				break;
 			default:
 				super.handleMessage(msg);
@@ -110,14 +120,21 @@ public class RealTimeDataActivity extends Activity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		setContentView(R.layout.activity_show_anon_pages);
 		// Show the Up button in the action bar.
 		setupActionBar();
-		anonPagesGraph = ColectFeaturesService.getLineGraph();	
-		llayout = (LinearLayout) findViewById(R.id.charAnonPages);
+		anonPagesGraph = ColectFeaturesService.getLineGraph();
+		batteryTempGraph = ColectFeaturesService.getBatteryTempGraph();
 		
-		mChart = anonPagesGraph.getChart(this);	
-		llayout.addView(mChart);
+		//Create an adapter to store the charts
+		chartAdapter = new GraphChartAdapter(getApplicationContext());
+		
+		anonPagesChart = anonPagesGraph.getChart(this);
+		batteryTempChart = batteryTempGraph.getChart(this);
+		chartAdapter.add(anonPagesChart);
+		chartAdapter.add(batteryTempChart);
+		
+		setListAdapter(chartAdapter);
+		
 	}
 	
 	@Override
