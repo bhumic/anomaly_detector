@@ -27,8 +27,8 @@ public class AnonPagesGraph {
 	//A View object that is used by the activity to show the graph to the user
 	private GraphicalView mChart;
 	
-	public AnonPagesGraph(String dataDescription) {
-		series = new XYSeries(dataDescription);
+	public AnonPagesGraph() {
+		series = new XYSeries("Anonymous pages");
 		renderer = new XYSeriesRenderer();
 		renderer.setColor(Color.YELLOW);
 		renderer.setLineWidth(2);
