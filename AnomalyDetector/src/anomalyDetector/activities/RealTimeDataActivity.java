@@ -26,22 +26,27 @@ import android.os.Build;
 import anomalyDetector.featureExtractor.R;
 import anomalyDetector.graph.AnonPagesGraph;
 import anomalyDetector.graph.BatteryTemperatureGraph;
+import anomalyDetector.graph.MappedPagesGraph;
 import anomalyDetector.services.ColectFeaturesService;
 import anomalyDetector.utils.GraphChartAdapter;
 
-public class RealTimeDataActivity extends ListActivity{
+public class RealTimeDataActivity extends Activity{
 
 	private GraphicalView anonPagesChart;
 	private GraphicalView batteryTempChart;
+	private GraphicalView mappedPagesChart;
 	
 	private AnonPagesGraph anonPagesGraph;
 	private BatteryTemperatureGraph batteryTempGraph;
+	private MappedPagesGraph mappedPagesGraph;
 	
 	private final String TAG = "SHOW_GRAPHS_ACTIVITY";
 	
 	static final int DATA_RECIVED = 1;
 	
-	private GraphChartAdapter chartAdapter;
+	private LinearLayout anonPagesLlayout;
+	private LinearLayout batteryTempLayout;
+	private LinearLayout mappedPagesLayout;
 	
 	/*
 	 * Handle incoming messages from a service
@@ -55,6 +60,7 @@ public class RealTimeDataActivity extends ListActivity{
 			case ColectFeaturesService.MSG_DATA_RECEIVED:
 				anonPagesChart.repaint();
 				batteryTempChart.repaint();
+				mappedPagesChart.repaint();
 				break;
 			default:
 				super.handleMessage(msg);
@@ -120,21 +126,27 @@ public class RealTimeDataActivity extends ListActivity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		setContentView(R.layout.activity_show_anon_pages);
 		// Show the Up button in the action bar.
 		setupActionBar();
 		anonPagesGraph = ColectFeaturesService.getLineGraph();
 		batteryTempGraph = ColectFeaturesService.getBatteryTempGraph();
+		mappedPagesGraph = ColectFeaturesService.getMappedPagesGraph();
 		
-		//Create an adapter to store the charts
-		chartAdapter = new GraphChartAdapter(getApplicationContext());
+		//Layouts for each individual graph object
+		anonPagesLlayout = (LinearLayout) findViewById(R.id.charAnonPages);
+		batteryTempLayout = (LinearLayout) findViewById(R.id.chartBatteryTemp);
+		mappedPagesLayout = (LinearLayout) findViewById(R.id.chartMappedPages);
 		
+		//Obtain the chart objects
 		anonPagesChart = anonPagesGraph.getChart(this);
 		batteryTempChart = batteryTempGraph.getChart(this);
-		chartAdapter.add(anonPagesChart);
-		chartAdapter.add(batteryTempChart);
+		mappedPagesChart = mappedPagesGraph.getChart(this);	
 		
-		setListAdapter(chartAdapter);
-		
+		//Add the chart objects to their layouts
+		anonPagesLlayout.addView(anonPagesChart);
+		batteryTempLayout.addView(batteryTempChart);
+		mappedPagesLayout.addView(mappedPagesChart);
 	}
 	
 	@Override
