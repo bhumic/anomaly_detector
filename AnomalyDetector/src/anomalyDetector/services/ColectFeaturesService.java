@@ -34,6 +34,7 @@ import anomalyDetector.featureExtraction.FeatureExtractor;
 import anomalyDetector.featureExtractor.R;
 import anomalyDetector.graph.AnonPagesGraph;
 import anomalyDetector.graph.BatteryTemperatureGraph;
+import anomalyDetector.graph.MappedPagesGraph;
 
 /**
  * 
@@ -93,6 +94,7 @@ public class ColectFeaturesService extends Service {
 	//Reference to graph objects 
 	private static AnonPagesGraph anonPagesGraph;
 	private static BatteryTemperatureGraph batteryTemperatureGraph;
+	private static MappedPagesGraph mappedPagesGraph;
 	
 	public static final String COLECT_FEATURE_SERVICE = "anomalyDetector.services.ColectFeaturesService";
 	
@@ -108,6 +110,7 @@ public class ColectFeaturesService extends Service {
 		//Graph objects creation
 		anonPagesGraph = new AnonPagesGraph();
 		batteryTemperatureGraph = new BatteryTemperatureGraph();
+		mappedPagesGraph = new MappedPagesGraph();
 		
 		//Intent to launch the main activity of the application
 		startActivityIntent = new Intent(getApplicationContext(), MainFeaturesActivity.class);
@@ -296,6 +299,7 @@ public class ColectFeaturesService extends Service {
 		//Add new points to the graph series
 		anonPagesGraph.addNewPoint(line, elapsedTime);
 		batteryTemperatureGraph.addNewPoint(line, elapsedTime);
+		mappedPagesGraph.addNewPoint(line, elapsedTime);
 		
 		notifyActivityObservers();
 		
@@ -388,5 +392,9 @@ public class ColectFeaturesService extends Service {
 	
 	public static BatteryTemperatureGraph getBatteryTempGraph(){
 		return batteryTemperatureGraph;
+	}
+	
+	public static MappedPagesGraph getMappedPagesGraph() {
+		return mappedPagesGraph;
 	}
 }
