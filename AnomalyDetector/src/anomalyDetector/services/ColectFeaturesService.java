@@ -32,9 +32,16 @@ import anomalyDetector.activities.MainFeaturesActivity;
 import anomalyDetector.factories.FeatureExtractorFactory;
 import anomalyDetector.featureExtraction.FeatureExtractor;
 import anomalyDetector.featureExtractor.R;
+import anomalyDetector.graph.ActivePagesGraph;
 import anomalyDetector.graph.AnonPagesGraph;
 import anomalyDetector.graph.BatteryTemperatureGraph;
+import anomalyDetector.graph.BatteryVoltageGraph;
 import anomalyDetector.graph.MappedPagesGraph;
+import anomalyDetector.graph.ReceivedPacketsGraph;
+import anomalyDetector.graph.RunningProcGraph;
+import anomalyDetector.graph.TotalEntitiesGraph;
+import anomalyDetector.graph.TransmittedBytesGraph;
+import anomalyDetector.graph.TransmittedPacketsGraph;
 
 /**
  * 
@@ -95,6 +102,13 @@ public class ColectFeaturesService extends Service {
 	private static AnonPagesGraph anonPagesGraph;
 	private static BatteryTemperatureGraph batteryTemperatureGraph;
 	private static MappedPagesGraph mappedPagesGraph;
+	private static RunningProcGraph runningProcGraph;
+	private static TotalEntitiesGraph totalEntitiesGraph;
+	private static ActivePagesGraph activePagesGraph;
+	private static BatteryVoltageGraph batteryVoltageGraph;
+	private static TransmittedBytesGraph transmittedBytesGraph;
+	private static TransmittedPacketsGraph transmittedPacketsGraph;
+	private static ReceivedPacketsGraph receivedPacketsGraph;
 	
 	public static final String COLECT_FEATURE_SERVICE = "anomalyDetector.services.ColectFeaturesService";
 	
@@ -111,6 +125,13 @@ public class ColectFeaturesService extends Service {
 		anonPagesGraph = new AnonPagesGraph();
 		batteryTemperatureGraph = new BatteryTemperatureGraph();
 		mappedPagesGraph = new MappedPagesGraph();
+		runningProcGraph = new RunningProcGraph();
+		totalEntitiesGraph = new TotalEntitiesGraph();
+		activePagesGraph = new ActivePagesGraph();
+		batteryVoltageGraph = new BatteryVoltageGraph();
+		transmittedBytesGraph = new TransmittedBytesGraph();
+		transmittedPacketsGraph = new TransmittedPacketsGraph();
+		receivedPacketsGraph = new ReceivedPacketsGraph();
 		
 		//Intent to launch the main activity of the application
 		startActivityIntent = new Intent(getApplicationContext(), MainFeaturesActivity.class);
@@ -300,6 +321,14 @@ public class ColectFeaturesService extends Service {
 		anonPagesGraph.addNewPoint(line, elapsedTime);
 		batteryTemperatureGraph.addNewPoint(line, elapsedTime);
 		mappedPagesGraph.addNewPoint(line, elapsedTime);
+		runningProcGraph.addNewPoint(line, elapsedTime);
+		totalEntitiesGraph.addNewPoint(line, elapsedTime);
+		activePagesGraph.addNewPoint(line, elapsedTime);
+		batteryVoltageGraph.addNewPoint(line, elapsedTime);
+		transmittedBytesGraph.addNewPoint(line, elapsedTime);
+		transmittedPacketsGraph.addNewPoint(line, elapsedTime);
+		receivedPacketsGraph.addNewPoint(line, elapsedTime);
+						
 		
 		notifyActivityObservers();
 		
@@ -396,5 +425,33 @@ public class ColectFeaturesService extends Service {
 	
 	public static MappedPagesGraph getMappedPagesGraph() {
 		return mappedPagesGraph;
+	}
+	
+	public static RunningProcGraph getRunningProcGraph() {
+		return runningProcGraph;
+	}
+	
+	public static TotalEntitiesGraph getTotalEntitiesGraph() {
+		return totalEntitiesGraph;
+	}
+	
+	public static ActivePagesGraph getActivePagesGraph() {
+		return activePagesGraph;
+	}
+	
+	public static BatteryVoltageGraph getBatteryVoltageGraph() {
+		return batteryVoltageGraph;
+	}
+	
+	public static TransmittedBytesGraph getTransmittedBytesGraph() {
+		return transmittedBytesGraph;
+	}
+	
+	public static TransmittedPacketsGraph getTransmittedPacketsGraph() {
+		return transmittedPacketsGraph;
+	}
+	
+	public static ReceivedPacketsGraph getReceivedPacketsGraph() {
+		return receivedPacketsGraph;
 	}
 }
