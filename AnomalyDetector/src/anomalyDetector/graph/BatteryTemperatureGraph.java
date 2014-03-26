@@ -54,7 +54,7 @@ public class BatteryTemperatureGraph {
 		}
 		
 		public void addNewPoint(String lineData, int second){
-			double value = Double.parseDouble(lineData.split("\\s+")[0])/10;
+			double value = Double.parseDouble(lineData.split("\\s+")[1])/10;
 			series.add(second, value);
 			
 			int maxValue = second;
