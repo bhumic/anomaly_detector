@@ -24,9 +24,16 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Build;
 import anomalyDetector.featureExtractor.R;
+import anomalyDetector.graph.ActivePagesGraph;
 import anomalyDetector.graph.AnonPagesGraph;
 import anomalyDetector.graph.BatteryTemperatureGraph;
+import anomalyDetector.graph.BatteryVoltageGraph;
 import anomalyDetector.graph.MappedPagesGraph;
+import anomalyDetector.graph.ReceivedPacketsGraph;
+import anomalyDetector.graph.RunningProcGraph;
+import anomalyDetector.graph.TotalEntitiesGraph;
+import anomalyDetector.graph.TransmittedBytesGraph;
+import anomalyDetector.graph.TransmittedPacketsGraph;
 import anomalyDetector.services.ColectFeaturesService;
 import anomalyDetector.utils.GraphChartAdapter;
 
@@ -35,18 +42,39 @@ public class RealTimeDataActivity extends Activity{
 	private GraphicalView anonPagesChart;
 	private GraphicalView batteryTempChart;
 	private GraphicalView mappedPagesChart;
+	private GraphicalView runningProcChart;
+	private GraphicalView totalEntitiesChart;
+	private GraphicalView activePagesChart;
+	private GraphicalView batteryVoltageChart;
+	private GraphicalView transmittedBytesChart;
+	private GraphicalView transmittedPacketsChart;
+	private GraphicalView receivedPacketsChart;
 	
 	private AnonPagesGraph anonPagesGraph;
 	private BatteryTemperatureGraph batteryTempGraph;
 	private MappedPagesGraph mappedPagesGraph;
+	private RunningProcGraph runningProcGraph;
+	private TotalEntitiesGraph totalEntitiesGraph;
+	private ActivePagesGraph activePagesGraph;
+	private BatteryVoltageGraph batteryVoltageGraph;
+	private TransmittedBytesGraph transmittedBytesGraph;
+	private TransmittedPacketsGraph transmittedPacketsGraph;
+	private ReceivedPacketsGraph receivedPacketsGraph;
 	
 	private final String TAG = "SHOW_GRAPHS_ACTIVITY";
 	
 	static final int DATA_RECIVED = 1;
 	
-	private LinearLayout anonPagesLlayout;
+	private LinearLayout anonPagesLayout;
 	private LinearLayout batteryTempLayout;
 	private LinearLayout mappedPagesLayout;
+	private LinearLayout runningProcLayout;
+	private LinearLayout totalEntitiesLayout;
+	private LinearLayout activePagesLayout;
+	private LinearLayout batteryVoltageLayout;
+	private LinearLayout transmittedBytesLayout;
+	private LinearLayout transmittedPacketsLayout;
+	private LinearLayout receivedPacketsLayout;
 	
 	/*
 	 * Handle incoming messages from a service
@@ -61,6 +89,13 @@ public class RealTimeDataActivity extends Activity{
 				anonPagesChart.repaint();
 				batteryTempChart.repaint();
 				mappedPagesChart.repaint();
+				runningProcChart.repaint();
+				totalEntitiesChart.repaint();
+				activePagesChart.repaint();
+				batteryVoltageChart.repaint();
+				transmittedBytesChart.repaint();
+				transmittedPacketsChart.repaint();
+				receivedPacketsChart.repaint();
 				break;
 			default:
 				super.handleMessage(msg);
@@ -132,21 +167,49 @@ public class RealTimeDataActivity extends Activity{
 		anonPagesGraph = ColectFeaturesService.getLineGraph();
 		batteryTempGraph = ColectFeaturesService.getBatteryTempGraph();
 		mappedPagesGraph = ColectFeaturesService.getMappedPagesGraph();
+		runningProcGraph = ColectFeaturesService.getRunningProcGraph();
+		totalEntitiesGraph = ColectFeaturesService.getTotalEntitiesGraph();
+		activePagesGraph = ColectFeaturesService.getActivePagesGraph();
+		batteryVoltageGraph = ColectFeaturesService.getBatteryVoltageGraph();
+		transmittedBytesGraph = ColectFeaturesService.getTransmittedBytesGraph();
+		transmittedPacketsGraph = ColectFeaturesService.getTransmittedPacketsGraph();
+		receivedPacketsGraph = ColectFeaturesService.getReceivedPacketsGraph();
 		
 		//Layouts for each individual graph object
-		anonPagesLlayout = (LinearLayout) findViewById(R.id.charAnonPages);
+		anonPagesLayout = (LinearLayout) findViewById(R.id.charAnonPages);
 		batteryTempLayout = (LinearLayout) findViewById(R.id.chartBatteryTemp);
 		mappedPagesLayout = (LinearLayout) findViewById(R.id.chartMappedPages);
+		runningProcLayout = (LinearLayout) findViewById(R.id.chartRunningProc);
+		totalEntitiesLayout = (LinearLayout) findViewById(R.id.chartTotalEntities);
+		activePagesLayout = (LinearLayout) findViewById(R.id.chartActivePages);
+		batteryVoltageLayout = (LinearLayout) findViewById(R.id.chartBatteryVoltage);
+		transmittedBytesLayout = (LinearLayout) findViewById(R.id.chartTransmittedBytes);
+		transmittedPacketsLayout = (LinearLayout) findViewById(R.id.chartTransmittedPackets);
+		receivedPacketsLayout = (LinearLayout) findViewById(R.id.chartReceivedPackets);
 		
 		//Obtain the chart objects
 		anonPagesChart = anonPagesGraph.getChart(this);
 		batteryTempChart = batteryTempGraph.getChart(this);
-		mappedPagesChart = mappedPagesGraph.getChart(this);	
+		mappedPagesChart = mappedPagesGraph.getChart(this);
+		runningProcChart = runningProcGraph.getChart(this);
+		totalEntitiesChart = totalEntitiesGraph.getChart(this);
+		activePagesChart = activePagesGraph.getChart(this);
+		batteryVoltageChart = batteryVoltageGraph.getChart(this);
+		transmittedBytesChart = transmittedBytesGraph.getChart(this);
+		transmittedPacketsChart = transmittedPacketsGraph.getChart(this);
+		receivedPacketsChart = receivedPacketsGraph.getChart(this);
 		
 		//Add the chart objects to their layouts
-		anonPagesLlayout.addView(anonPagesChart);
+		anonPagesLayout.addView(anonPagesChart);
 		batteryTempLayout.addView(batteryTempChart);
 		mappedPagesLayout.addView(mappedPagesChart);
+		runningProcLayout.addView(runningProcChart);
+		totalEntitiesLayout.addView(totalEntitiesChart);
+		activePagesLayout.addView(activePagesChart);
+		batteryVoltageLayout.addView(batteryVoltageChart);
+		transmittedBytesLayout.addView(transmittedBytesChart);
+		transmittedPacketsLayout.addView(transmittedPacketsChart);
+		receivedPacketsLayout.addView(receivedPacketsChart);
 	}
 	
 	@Override
