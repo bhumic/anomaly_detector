@@ -9,6 +9,7 @@ import org.achartengine.renderer.XYSeriesRenderer;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 
 public class TransmittedBytesGraph {
 
@@ -37,7 +38,7 @@ public class TransmittedBytesGraph {
 			
 			mRenderer.addSeriesRenderer(renderer);
 			mRenderer.setBackgroundColor(Color.BLACK);
-			mRenderer.setYTitle("Tansmitted Bytes(MB)");
+			mRenderer.setYTitle("Tansmitted Bytes(kB)");
 			mRenderer.setApplyBackgroundColor(true);
 			mRenderer.setAxisTitleTextSize(23.0f);
 			mRenderer.setChartTitleTextSize(23.0f);
@@ -54,14 +55,14 @@ public class TransmittedBytesGraph {
 		}
 		
 		public void addNewPoint(String lineData, int second){
-			double value = Double.parseDouble(lineData.split("\\s+")[7])/1048576;
+			double value = Double.parseDouble(lineData.split("\\s+")[7])/1024;
 			series.add(second, value);
 			
-			int maxValue = second;
-			int minValue = (second - 60)>0 ? (second - 60) : 2;
-			mRenderer.setXAxisMax(maxValue);
-			mRenderer.setXAxisMin(minValue);
-			mRenderer.setYAxisMax(25);
+//			int maxValue = second;
+//			int minValue = (second - 60)>0 ? (second - 60) : 2;
+//			mRenderer.setXAxisMax(maxValue);
+//			mRenderer.setXAxisMin(minValue);
+			mRenderer.setYAxisMax(100);
 			mRenderer.setYAxisMin(0);
 		}
 		

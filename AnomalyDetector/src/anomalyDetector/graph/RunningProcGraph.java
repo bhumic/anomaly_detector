@@ -57,11 +57,11 @@ public class RunningProcGraph {
 			double value = Double.parseDouble(lineData.split("\\s+")[3]);
 			series.add(second, value);
 			
-			int maxValue = second;
-			int minValue = (second - 60)>0 ? (second - 60) : 2;
-			mRenderer.setXAxisMax(maxValue);
-			mRenderer.setXAxisMin(minValue);
-			mRenderer.setYAxisMax(value + 50);
+//			int maxValue = second;
+//			int minValue = (second - 60)>0 ? (second - 60) : 2;
+//			mRenderer.setXAxisMax(maxValue);
+//			mRenderer.setXAxisMin(minValue);
+			mRenderer.setYAxisMax(100);
 			mRenderer.setYAxisMin(0);
 		}
 		

@@ -57,12 +57,12 @@ public class ActivePagesGraph {
 			double value = Double.parseDouble(lineData.split("\\s+")[5])/1000;
 			series.add(second, value);
 			
-			int maxValue = second;
-			int minValue = (second - 60)>0 ? (second - 60) : 2;
-			mRenderer.setXAxisMax(maxValue);
-			mRenderer.setXAxisMin(minValue);
-			mRenderer.setYAxisMax(value + 200);
-			mRenderer.setYAxisMin(value - 200);
+//			int maxValue = second;
+//			int minValue = (second - 60)>0 ? (second - 60) : 2;
+//			mRenderer.setXAxisMax(maxValue);
+//			mRenderer.setXAxisMin(minValue);
+			mRenderer.setYAxisMax(600);
+			mRenderer.setYAxisMin(0);
 		}
 		
 		public XYMultipleSeriesRenderer getmRenderer() {

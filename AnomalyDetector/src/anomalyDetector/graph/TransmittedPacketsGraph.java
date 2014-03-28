@@ -57,11 +57,11 @@ public class TransmittedPacketsGraph {
 				double value = Double.parseDouble(lineData.split("\\s+")[8]);
 				series.add(second, value);
 				
-				int maxValue = second;
-				int minValue = (second - 60)>0 ? (second - 60) : 2;
-				mRenderer.setXAxisMax(maxValue);
-				mRenderer.setXAxisMin(minValue);
-				mRenderer.setYAxisMax(2000);
+//				int maxValue = second;
+//				int minValue = (second - 60)>0 ? (second - 60) : 2;
+//				mRenderer.setXAxisMax(maxValue);
+//				mRenderer.setXAxisMin(minValue);
+				mRenderer.setYAxisMax(1000);
 				mRenderer.setYAxisMin(0);
 			}
 			

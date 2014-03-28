@@ -57,11 +57,11 @@ public class BatteryVoltageGraph {
 		double value = Double.parseDouble(lineData.split("\\s+")[6])/1000;
 		series.add(second, value);
 		
-		int maxValue = second;
-		int minValue = (second - 60)>0 ? (second - 60) : 2;
-		mRenderer.setXAxisMax(maxValue);
-		mRenderer.setXAxisMin(minValue);
-		mRenderer.setYAxisMax(value + 3);
+//		int maxValue = second;
+//		int minValue = (second - 60)>0 ? (second - 60) : 2;
+//		mRenderer.setXAxisMax(maxValue);
+//		mRenderer.setXAxisMin(minValue);
+		mRenderer.setYAxisMax(10);
 		mRenderer.setYAxisMin(0);
 	}
 	
