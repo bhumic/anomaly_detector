@@ -86,6 +86,7 @@ public class RealTimeDataActivity extends Activity{
 		public void handleMessage(Message msg) {
 			switch(msg.what){
 			case ColectFeaturesService.MSG_DATA_RECEIVED:
+				//Log.i(TAG, "NEW DATA!");
 				anonPagesChart.repaint();
 				batteryTempChart.repaint();
 				mappedPagesChart.repaint();
@@ -164,6 +165,7 @@ public class RealTimeDataActivity extends Activity{
 		setContentView(R.layout.activity_show_anon_pages);
 		// Show the Up button in the action bar.
 		setupActionBar();
+		Log.i(TAG, "ON CREATE!");
 		anonPagesGraph = ColectFeaturesService.getLineGraph();
 		batteryTempGraph = ColectFeaturesService.getBatteryTempGraph();
 		mappedPagesGraph = ColectFeaturesService.getMappedPagesGraph();
@@ -227,6 +229,7 @@ public class RealTimeDataActivity extends Activity{
 	@Override
 	protected void onStop() {
 		super.onStop();
+		//Log.i(TAG, "ON STOP!");
 		doUnbindService();
 	}
 	
